@@ -2,8 +2,15 @@
 
 	"use strict";
 
+	var $ = function(selector){
+		return document.querySelector(selector);
+	};
+	var $$ = function(selector){
+		return document.querySelectorAll(selector);
+	};
+
 	var brownieViewer = new BrownieViewer({
-		canvas: document.getElementById("brownieViewer")
+		canvas: $("#brownieViewer")
 	});
 
 	brownieViewer.updateBrownie([
