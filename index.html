@@ -8,19 +8,43 @@
 		* {
 			box-sizing: border-box;
 			margin: 0; padding: 0;
-			display: flex-box;
 		}
 
 		html, body {
 			height: 100%; width: 100%;
+			background-color: black;
+		}
+
+		.brownieViewer {
+			float: right;
+		}
+
+		.rasterGrid {
+			float: left;
+			flex-direction: column;
+		}
+		.rasterGrid .pixelRow {
+			display: flex;
+			flex-direction: row;
+			flex-grow: 1;
+			/* TODO - height should be auto-filled */
+			height: 50px;
+		}
+		.rasterGrid .pixelRow .pixel {
+			flex-grow: 1;
+			border: solid 1px #333;
+			cursor: pointer;
+			background-color: #111;
+		}
+		.rasterGrid .pixelRow .pixel:hover {
+			background-color: #444;
 		}
 	</style>	
 </head>
 <body>
 
-	<canvas id="brownieViewer" data-width="500" data-height="500"></canvas>
-	<button id="randVox">Add random voxel</button>
-
+	<canvas id="brownieViewer" class="brownieViewer" data-width="500" data-height="500"></canvas>
+	<div id="rasterGrid" class="rasterGrid" style="width: 500px; height: 500px;"></div>
 
 	<script src="lib/three.js"></script>
 	<script src="lib/brownie.js"></script>
