@@ -55,6 +55,7 @@
 
 		updateBrownie: function(brownieData){
 			brownieData.forEach(function(position){
+				// TODO - unset
 				this.brownie.set.apply(null, position.concat([1,1,1]));
 			}.bind(this));
 			this.renderBrownie();
@@ -63,17 +64,20 @@
 		renderBrownie: function(){
 			// rebuild brownie geometry
 			this.brownie.rebuild();			
-			var geo = this.brownie.getGeometry();
+			var geo = this.brownie.getGeometry(),
+				currMeshRotation;
 
 			// remove any existing meshes from the scene
 			this.meshes.forEach(function(mesh){
+				currMeshRotation = mesh.rotation.y;
 				this.scene.remove(mesh);
-			});
+			}.bind(this));
 			this.meshes = [];
 
 			// keep a reference to mesh for removal before
 			// updating scene
-			var mesh = new THREE.Mesh(geo, this.material)
+			var mesh = new THREE.Mesh(geo, this.material);
+			mesh.rotation.y = currMeshRotation || 0;
 			this.meshes.push(mesh);
 
 			this.scene.add(mesh);

@@ -23,5 +23,20 @@
 		[5,5,5]
 	]);
 
+	// allow adding random voxels
+	$("#randVox").addEventListener("click", function(){
+		brownieViewer.updateBrownie([[
+			randWholeNumber(-10, 10),
+			randWholeNumber(-10, 10),
+			randWholeNumber(-10, 10)
+		]]);
+	});
+
+	function randWholeNumber(min, max){
+		return Math.floor((Math.random()*max) + min);
+	}
+
+	window.mainBrownieViewer = brownieViewer;
+
 
 })();
