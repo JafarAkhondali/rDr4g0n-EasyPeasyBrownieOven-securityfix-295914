@@ -12,8 +12,9 @@
 		// TODO - ensure canvas exists
 		this.canvas = config.canvas;
 
-		this.canvas.width = window.innerWidth * 0.5;
-		this.canvas.height = window.innerHeight;
+		// TODO - probably a better way to set width/height
+		this.canvas.width = +this.canvas.dataset["width"];
+		this.canvas.height = +this.canvas.dataset["height"];
 		
 		this.renderer = new THREE.WebGLRenderer({
 			canvas: this.canvas
