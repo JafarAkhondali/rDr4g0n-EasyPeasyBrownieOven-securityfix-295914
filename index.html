@@ -27,14 +27,13 @@
 			width: 100%;
 		}
 
-		.rasterGrid {
+/*		.rasterGrid {
 			flex-direction: column;
 		}
 		.rasterGrid .pixelRow {
 			display: flex;
 			flex-direction: row;
 			flex-grow: 1;
-			/* TODO - height should be auto-filled */
 			height: 50px;
 		}
 		.rasterGrid .pixelRow .pixel {
@@ -48,16 +47,18 @@
 		}
 		.rasterGrid .pixelRow .pixel.set {
 			background-color: #FFFFFF;
-		}
+		}*/
 	</style>	
 </head>
 <body>
 
 	<canvas id="brownieViewer" class="brownieViewer" data-width="500" data-height="500"></canvas>
-	<div class="rasterGridContainer">
+<!-- 	<div class="rasterGridContainer">
 		<div id="rasterGrid" class="rasterGrid" style="width: 500px; height: 500px;"></div>
 		<input id="sliceSelector" class="sliceSelector" type="range" min=-10 max=10>
-	</div>
+	</div> -->
+
+	<canvas id="sliceEditor" class="sliceEditor"
 
 	<script src="lib/three.js"></script>
 	<script src="lib/brownie.js"></script>

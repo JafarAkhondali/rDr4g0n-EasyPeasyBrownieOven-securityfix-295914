@@ -29,7 +29,7 @@
 	window.mainBrownieViewer = brownieViewer;*/
 
 
-	// setup raster grid using divs
+/*	// setup raster grid using divs
 	// TODO - use canvas or maybe svg?
 	var rasterGridEl = $("#rasterGrid"),
 		rasterGridContents = [],
@@ -66,7 +66,7 @@
 		Array.prototype.forEach.call($$(".pixel"), function(pixelEl){
 			pixelEl.classList.remove("set");
 		});
-	});
+	});*/
 
 
 })();
