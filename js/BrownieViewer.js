@@ -37,7 +37,6 @@
 			vertexColors: THREE.VertexColors,
 			specular: 0
 		});
-		this.meshes = [];
 
 		this.newBrownie();
 
@@ -51,6 +50,11 @@
 
 		newBrownie: function(brownie){
 			this.brownie = new Brownie(this.renderer);
+			var geo = this.brownie.getGeometry();
+			
+			this.mesh = new THREE.Mesh(geo, this.material);
+			this.scene.add(this.mesh);
+			this.renderScene();
 		},
 
 		updateBrownie: function(brownieData){
@@ -62,26 +66,7 @@
 		},
 
 		renderBrownie: function(){
-			// rebuild brownie geometry
-			this.brownie.rebuild();			
-			var geo = this.brownie.getGeometry(),
-				currMeshRotation;
-
-			// remove any existing meshes from the scene
-			this.meshes.forEach(function(mesh){
-				currMeshRotation = mesh.rotation.y;
-				this.scene.remove(mesh);
-			}.bind(this));
-			this.meshes = [];
-
-			// keep a reference to mesh for removal before
-			// updating scene
-			var mesh = new THREE.Mesh(geo, this.material);
-			mesh.rotation.y = currMeshRotation || 0;
-			this.meshes.push(mesh);
-
-			this.scene.add(mesh);
-
+			this.brownie.rebuild();
 			this.renderScene();
 		},
 
@@ -91,9 +76,7 @@
 		},
 
 		autoRotateMesh: function(){
-			this.meshes.forEach(function(mesh){
-				mesh.rotation.y += 0.01;
-			});
+			this.mesh.rotation.y += 0.01;
 			this.renderScene();
 			requestAnimationFrame(this.autoRotateMesh);
 		}
