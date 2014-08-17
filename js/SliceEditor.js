@@ -15,23 +15,28 @@
 		this.model = config.model;
 
 		this.brownieWidth = Object.keys(this.model).map(function(xy){
-			return xy.split(",")[0];
+			return keyToXY(xy)[0];
 		}).reduce(function(acc, x){
 			return Math.max(x, acc)
 		}, 0);
 
 		this.brownieHeight = Object.keys(this.model).map(function(xy){
-			return xy.split(",")[1];
+			return keyToXY(xy)[1];
 		}).reduce(function(acc, y){
 			return Math.max(y, acc)
 		}, 0);
 
 		// ratio is always square
 		this.pxMultiplier = Math.min(this.canvas.width / this.brownieWidth, this.canvas.height / this.brownieHeight);
-
 		
-		// listen for clickies
-		this.canvas.addEventListener("mousedown", this.onCanvasClick.bind(this));
+		// bind context for event listeners
+		this.onMouseDown = this.onMouseDown.bind(this);
+		this.onMouseUp = this.onMouseUp.bind(this);
+		this.onDrag = this.onDrag.bind(this);
+
+		// listen for clicksies
+		this.canvas.addEventListener("mousedown", this.onMouseDown);
+		this.canvas.addEventListener("mouseup", this.onMouseUp);
 
 		this.render();
 	}
@@ -44,6 +49,9 @@
 			// draw pixels
 			var val,
 				pxMultiplier = this.pxMultiplier;
+
+			// clear canvas
+			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
 			this.context.strokeStyle = "#444444";
 
@@ -60,7 +68,20 @@
 			}
 		},
 
-		onCanvasClick: function(e){
+		onMouseDown: function(e){
+			var px = this.getTouchedPixel(getMousePos(e));
+			this._modelSet([px[0]-1, px[1]-1], "#FF0000");
+
+			// listen for drag event
+			this.canvas.addEventListener("mousemove", this.onDrag);
+		},
+
+		onMouseUp: function(e){
+			// clear listener for drag
+			this.canvas.removeEventListener("mousemove", this.onDrag);
+		},
+
+		onDrag: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
 			this._modelSet([px[0]-1, px[1]-1], "#FF0000");
 		},
@@ -97,6 +118,11 @@
 		} else if(evt.layerX || evt.layerX == 0){
 			return [evt.layerX, evt.layerY]
 		}
+	}
+
+	function keyToXY(key){
+		var xy = key.split(",");
+		return [+xy[0], +xy[1]];
 	}
 
 	window.SliceEditor = SliceEditor;

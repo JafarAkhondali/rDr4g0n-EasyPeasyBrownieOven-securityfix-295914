@@ -12,8 +12,8 @@
 
 	// our main model dude guy
 	var brownieModel = {},
-		BROWNIE_WIDTH = 20,
-		BROWNIE_HEIGHT = 20,
+		BROWNIE_WIDTH = 10,
+		BROWNIE_HEIGHT = 10,
 		// effectively z value
 		sliceNum = 0;
 
@@ -54,11 +54,6 @@
 		});
 
 		brownieViewer.updateBrownie(brownieChangeset);
-
-		// name: "6,7"
-		// object: Object
-		// oldValue: null
-		// type: "update"
 	});
 
 })();
