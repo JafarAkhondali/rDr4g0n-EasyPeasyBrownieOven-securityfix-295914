@@ -2,6 +2,7 @@
 
 	"use strict";
 
+	// jquery-esque selectors
 	var $ = function(selector){
 		return document.querySelector(selector);
 	};
@@ -9,64 +10,55 @@
 		return document.querySelectorAll(selector);
 	};
 
+	// our main model dude guy
+	var brownieModel = {},
+		BROWNIE_WIDTH = 20,
+		BROWNIE_HEIGHT = 20,
+		// effectively z value
+		sliceNum = 0;
+
+	// create a 10x10 grid of points
+	for(var x = 0; x < BROWNIE_WIDTH; x++){
+		for(var y = 0; y < BROWNIE_HEIGHT; y++){
+			brownieModel[x +","+ y] = null;
+		}
+	}
+
+	// 3D view of our model
 	var brownieViewer = new BrownieViewer({
 		canvas: $("#brownieViewer")
 	});
 
-	// allow adding random voxels
-/*	$("#randVox").addEventListener("click", function(){
-		brownieViewer.updateBrownie([[
-			randWholeNumber(-10, 10),
-			randWholeNumber(-10, 10),
-			randWholeNumber(-10, 10)
-		]]);
+	window.brownie = brownieViewer;
+
+	// editor for the mdoel
+	var sliceEditor = new SliceEditor({
+		canvas: $("#sliceEditor"),
+		model: brownieModel
 	});
 
-	function randWholeNumber(min, max){
-		return Math.floor((Math.random()*max) + min);
-	}
+	// event handlers for the model
+	// TODO - event emitter instead of this mess
+	Object.observe(brownieModel, function(changes){
+		var brownieChangeset = [];
 
-	window.mainBrownieViewer = brownieViewer;*/
+		// regardless of the change, the sliceEditor
+		// needs to re-render
+		sliceEditor.render();
 
-
-/*	// setup raster grid using divs
-	// TODO - use canvas or maybe svg?
-	var rasterGridEl = $("#rasterGrid"),
-		rasterGridContents = [],
-		RES_X = 10,
-		RES_Y = 10,
-		sliceSelectorEl = $("#sliceSelector");
-
-	for(var x = 0; x < RES_X; x++){
-		rasterGridContents.push("<div class='pixelRow'>");
-		for(var y = 0; y < RES_Y; y++){
-			rasterGridContents.push("<div class='pixel' data-x='"+ x +"' data-y='"+ y +"'></div>")
-		}
-		rasterGridContents.push("</div>");
-	}
-
-	rasterGridEl.innerHTML = rasterGridContents.join(" ");
-
-	// listen for clicks
-	rasterGridEl.addEventListener("click", function(e){
-		var slice = sliceSelectorEl.value;
-
-		// determine which dude was clicked and toggle
-		// him on/off
-		e.target.classList.add("set");
-
-		// update the brownie
-		brownieViewer.updateBrownie([[+e.target.dataset.x, +e.target.dataset.y, +slice]]);
-	});
-
-	// on slice change, clear all set pixels
-	// TODO - get pixels at the newly selected slice
-	// from the brownie
-	sliceSelectorEl.addEventListener("change", function(e){
-		Array.prototype.forEach.call($$(".pixel"), function(pixelEl){
-			pixelEl.classList.remove("set");
+		// find out waht the changes were and tell
+		// the brownie viewer to set/unset those vox
+		changes.forEach(function(change){
+			// TODO - if !object[name] send unset command
+			brownieChangeset.push([+change.name.split(",")[0], +change.name.split(",")[1], sliceNum]);
 		});
-	});*/
 
+		brownieViewer.updateBrownie(brownieChangeset);
+
+		// name: "6,7"
+		// object: Object
+		// oldValue: null
+		// type: "update"
+	});
 
 })();

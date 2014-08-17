@@ -26,44 +26,18 @@
 		.sliceSelector {
 			width: 100%;
 		}
-
-/*		.rasterGrid {
-			flex-direction: column;
-		}
-		.rasterGrid .pixelRow {
-			display: flex;
-			flex-direction: row;
-			flex-grow: 1;
-			height: 50px;
-		}
-		.rasterGrid .pixelRow .pixel {
-			flex-grow: 1;
-			border: solid 1px #333;
-			cursor: pointer;
-			background-color: #111;
-		}
-		.rasterGrid .pixelRow .pixel:hover {
-			background-color: #444;
-		}
-		.rasterGrid .pixelRow .pixel.set {
-			background-color: #FFFFFF;
-		}*/
 	</style>	
 </head>
 <body>
 
 	<canvas id="brownieViewer" class="brownieViewer" data-width="500" data-height="500"></canvas>
-<!-- 	<div class="rasterGridContainer">
-		<div id="rasterGrid" class="rasterGrid" style="width: 500px; height: 500px;"></div>
-		<input id="sliceSelector" class="sliceSelector" type="range" min=-10 max=10>
-	</div> -->
-
-	<canvas id="sliceEditor" class="sliceEditor"
+	<canvas id="sliceEditor" class="sliceEditor" data-width="500" data-height="500"></canvas>
 
 	<script src="lib/three.js"></script>
 	<script src="lib/brownie.js"></script>
 
 	<script src="js/BrownieViewer.js"></script> 
+	<script src="js/SliceEditor.js"></script> 
 	<script src="js/app.js"></script> 
 </body>
 </html>
