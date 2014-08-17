@@ -1,6 +1,13 @@
 (function(){
 	"use strict";
 
+	// HACK - just get junk working with 1 slice, then
+	// add the ability to deal with multiple slices
+	var SLICE = 0;
+
+	/**
+	 * Raster grid for painting a slice of brownie
+	 */
 	function SliceEditor(config){
 		// TODO - ensure config.canvas
 		this.canvas = config.canvas;
@@ -8,22 +15,24 @@
 		// TODO - probably a better way to set width/height
 		this.canvas.width = +this.canvas.dataset["width"];
 		this.canvas.height = +this.canvas.dataset["height"];
-
 		this.context = this.canvas.getContext("2d");
 
 		// TODO - bind model
 		this.model = config.model;
+		this.model.on("change", this.render, this);
 
-		this.brownieWidth = Object.keys(this.model).map(function(xy){
-			return keyToXY(xy)[0];
-		}).reduce(function(acc, x){
-			return Math.max(x, acc)
+		// determine brownie width
+		this.brownieWidth = Object.keys(this.model.model).map(function(key){
+			return this.model.parseKey(key);
+		}.bind(this)).reduce(function(acc, coords){
+			return Math.max(coords[0], acc)
 		}, 0);
 
-		this.brownieHeight = Object.keys(this.model).map(function(xy){
-			return keyToXY(xy)[1];
-		}).reduce(function(acc, y){
-			return Math.max(y, acc)
+		// determine brownie height
+		this.brownieHeight = Object.keys(this.model.model).map(function(key){
+			return this.model.parseKey(key);
+		}.bind(this)).reduce(function(acc, coords){
+			return Math.max(coords[1], acc)
 		}, 0);
 
 		// ratio is always square
@@ -57,7 +66,7 @@
 
 			for(var x = 0; x < this.brownieWidth; x++){
 				for(var y = 0; y < this.brownieHeight; y++){
-					val = this._modelGet([x, y]);
+					val = this._modelGet([x, y, SLICE]);
 
 					if(val){
 						this.context.fillStyle = val;
@@ -70,7 +79,7 @@
 
 		onMouseDown: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this._modelSet([px[0]-1, px[1]-1], "#FF0000");
+			this._modelSet([px[0]-1, px[1]-1, SLICE], "#FF0000");
 
 			// listen for drag event
 			this.canvas.addEventListener("mousemove", this.onDrag);
@@ -83,7 +92,7 @@
 
 		onDrag: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this._modelSet([px[0]-1, px[1]-1], "#FF0000");
+			this._modelSet([px[0]-1, px[1]-1, SLICE], "#FF0000");
 		},
 
 		getTouchedPixel: function(mousePos){
@@ -93,11 +102,11 @@
 			];
 		},
 
-		_modelSet: function(xy, val){
-			this.model[xy[0] +","+ xy[1]] = val;
+		_modelSet: function(coords, val){
+			this.model.model[this.model.createKey([coords[0], coords[1], coords[2]])] = val;
 		},
-		_modelGet: function(xy){
-			return this.model[xy[0] +","+ xy[1]];
+		_modelGet: function(coords){
+			return this.model.model[this.model.createKey([coords[0], coords[1], coords[2]])];
 		}
 	}
 
@@ -118,11 +127,6 @@
 		} else if(evt.layerX || evt.layerX == 0){
 			return [evt.layerX, evt.layerY]
 		}
-	}
-
-	function keyToXY(key){
-		var xy = key.split(",");
-		return [+xy[0], +xy[1]];
 	}
 
 	window.SliceEditor = SliceEditor;

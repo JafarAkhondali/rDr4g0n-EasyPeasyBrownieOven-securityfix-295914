@@ -9,6 +9,9 @@
 	function BrownieViewer(config){
 		config = config || {};
 
+		this.model = config.model;
+		this.model.on("changeset", this.updateBrownie, this);
+
 		// TODO - ensure canvas exists
 		this.canvas = config.canvas;
 
