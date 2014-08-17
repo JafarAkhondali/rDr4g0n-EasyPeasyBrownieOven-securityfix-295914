@@ -23,8 +23,9 @@
 			canvas: this.canvas
 		});
 
+		// TODO - use model dimensions to position camera better
 		this.camera = new THREE.PerspectiveCamera(75, this.canvas.width / this.canvas.height, .1, 100);
-		this.camera.position.set(10, 10, 10);
+		this.camera.position.set(this.model.width, this.model.height, this.model.depth);
 		this.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
 		this.light = new THREE.PointLight(0xFFFFFF);
@@ -54,6 +55,7 @@
 		newBrownie: function(brownie){
 			this.brownie = new Brownie(this.renderer);
 			var geo = this.brownie.getGeometry();
+			THREE.GeometryUtils.center(geo);
 			
 			this.mesh = new THREE.Mesh(geo, this.material);
 			this.scene.add(this.mesh);
@@ -61,9 +63,9 @@
 		},
 
 		updateBrownie: function(brownieData){
-			brownieData.forEach(function(position){
+			brownieData.forEach(function(val){
 				// TODO - unset
-				this.brownie.set.apply(null, position.concat([1,1,1]));
+				this.brownie.set.apply(null, val);
 			}.bind(this));
 			this.renderBrownie();
 		},

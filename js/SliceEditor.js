@@ -22,18 +22,10 @@
 		this.model.on("change", this.render, this);
 
 		// determine brownie width
-		this.brownieWidth = Object.keys(this.model.model).map(function(key){
-			return this.model.parseKey(key);
-		}.bind(this)).reduce(function(acc, coords){
-			return Math.max(coords[0], acc)
-		}, 0);
+		this.brownieWidth = this.model.width;
 
 		// determine brownie height
-		this.brownieHeight = Object.keys(this.model.model).map(function(key){
-			return this.model.parseKey(key);
-		}.bind(this)).reduce(function(acc, coords){
-			return Math.max(coords[1], acc)
-		}, 0);
+		this.brownieHeight = this.model.height;
 
 		// ratio is always square
 		this.pxMultiplier = Math.min(this.canvas.width / this.brownieWidth, this.canvas.height / this.brownieHeight);
@@ -46,6 +38,8 @@
 		// listen for clicksies
 		this.canvas.addEventListener("mousedown", this.onMouseDown);
 		this.canvas.addEventListener("mouseup", this.onMouseUp);
+
+		this.currColor = "#FFFFFF";
 
 		this.render();
 	}
@@ -79,7 +73,7 @@
 
 		onMouseDown: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this._modelSet([px[0]-1, px[1]-1, SLICE], "#FF0000");
+			this._modelSet([px[0]-1, px[1]-1, SLICE], this.currColor);
 
 			// listen for drag event
 			this.canvas.addEventListener("mousemove", this.onDrag);
@@ -92,7 +86,7 @@
 
 		onDrag: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this._modelSet([px[0]-1, px[1]-1, SLICE], "#FF0000");
+			this._modelSet([px[0]-1, px[1]-1, SLICE], this.currColor);
 		},
 
 		getTouchedPixel: function(mousePos){
@@ -100,6 +94,10 @@
 				Math.ceil(mousePos[0] / this.pxMultiplier),
 				Math.ceil(mousePos[1] / this.pxMultiplier),
 			];
+		},
+		
+		setColor: function(color){
+			this.currColor = color;
 		},
 
 		_modelSet: function(coords, val){

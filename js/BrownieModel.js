@@ -12,15 +12,11 @@
 
 		// TODO - this.model.model is kinda icky to type
 		this.model = {};
-
-		// intialize empty model
-		for(var x = 0; x < width; x++){
-			for(var y = 0; y < height; y++){
-				for(var z = 0; z < height; z++){
-					this.model[x +","+ y +","+ z] = null;
-				}
-			}
-		}
+		
+		// currently these values are modely just hints
+		this.width = width;
+		this.height = height;
+		this.depth = depth;
 
 		// begin observing the model for changes
 		Object.observe(this.model, this.onChange.bind(this));
@@ -38,9 +34,13 @@
 			// find out waht the changes were and tell
 			// the brownie viewer to set/unset those vox
 			changes.forEach(function(change){
-				// TODO - if !object[name] send unset command
-				// TODO - get colors from change
-				brownieChangeset.push(this.parseKey(change.name));
+				// TODO - unset pixel
+				if(!change.object[change.name]){
+
+				// otherwise, set pixel with color
+				} else {
+					brownieChangeset.push(this.parseKey(change.name).concat(hexColorToBrownieColor(change.object[change.name])));
+				}
 			}.bind(this));
 
 			// changeset event with a set of changes made
@@ -56,6 +56,19 @@
 			return coords.join(",");
 		}
 	};
+
+	// takes hex color like "#FF0000" and normalizes to
+	// 3 zero to one values. eg FF0000 becomes 1, 0, 0
+	function hexColorToBrownieColor(hex){
+		var normalized = [];
+
+		hex = hex.replace("#", "");
+		for(var i = 0; i < 6; i+=2){
+			normalized.push(parseInt(hex.substr(i, 2), 16) / 255);
+		}
+
+		return normalized;
+	}
 
 	window.BrownieModel = BrownieModel;
 	

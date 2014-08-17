@@ -8,6 +8,7 @@
 		* {
 			box-sizing: border-box;
 			margin: 0; padding: 0;
+			font-family: arial;
 		}
 
 		html, body {
@@ -26,12 +27,39 @@
 		.sliceSelector {
 			width: 100%;
 		}
+
+		.colorPalette {
+			width: 480px;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+		}
+		.color {
+			width: 30px;
+			height: 30px;
+		}
+
+		.toolbox {
+			display: flex;
+			flex-direction: column;
+		}
+		.tool {
+			width: 30px;
+			height: 30px;
+			background-color: #555;
+			color: white;
+		}
 	</style>	
 </head>
 <body>
 
 	<canvas id="brownieViewer" class="brownieViewer" data-width="500" data-height="500"></canvas>
 	<canvas id="sliceEditor" class="sliceEditor" data-width="500" data-height="500"></canvas>
+	<div id="colorPalette" class="colorPalette"></div>
+	<div id="toolbox" class="toolbox">
+		<div class="tool">e</div>
+		<div class="tool">b</div>
+	</div>
 
 	<script src="lib/three.js"></script>
 	<script src="lib/brownie.js"></script>
