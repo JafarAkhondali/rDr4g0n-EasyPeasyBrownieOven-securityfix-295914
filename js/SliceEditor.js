@@ -1,10 +1,6 @@
 (function(){
 	"use strict";
 
-	// HACK - just get junk working with 1 slice, then
-	// add the ability to deal with multiple slices
-	var SLICE = 0;
-
 	/**
 	 * Raster grid for painting a slice of brownie
 	 */
@@ -40,6 +36,7 @@
 		this.canvas.addEventListener("mouseup", this.onMouseUp);
 
 		this.currColor = "#FFFFFF";
+		this.slice = 0;
 
 		this.render();
 	}
@@ -60,7 +57,7 @@
 
 			for(var x = 0; x < this.brownieWidth; x++){
 				for(var y = 0; y < this.brownieHeight; y++){
-					val = this._modelGet([x, y, SLICE]);
+					val = this._modelGet([x, y, this.slice]);
 
 					if(val){
 						this.context.fillStyle = val;
@@ -73,7 +70,7 @@
 
 		onMouseDown: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this._modelSet([px[0]-1, px[1]-1, SLICE], this.currColor);
+			this._modelSet([px[0]-1, px[1]-1, this.slice], this.currColor);
 
 			// listen for drag event
 			this.canvas.addEventListener("mousemove", this.onDrag);
@@ -86,7 +83,7 @@
 
 		onDrag: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this._modelSet([px[0]-1, px[1]-1, SLICE], this.currColor);
+			this._modelSet([px[0]-1, px[1]-1, this.slice], this.currColor);
 		},
 
 		getTouchedPixel: function(mousePos){
@@ -98,6 +95,12 @@
 		
 		setColor: function(color){
 			this.currColor = color;
+		},
+
+		setSlice: function(slice){
+			// TODO - ensure slice is within bounds
+			this.slice = +slice;
+			this.render();
 		},
 
 		_modelSet: function(coords, val){
