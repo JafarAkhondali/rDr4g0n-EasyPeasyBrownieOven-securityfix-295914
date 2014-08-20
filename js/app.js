@@ -25,6 +25,15 @@
 		model: brownieModel
 	});
 
+	var toolbox = new Toolbox({
+		editors: [sliceEditor]
+	});
+
+	var brushTool = new BrushTool();
+
+	toolbox.addTool("brush", brushTool);
+	toolbox.setCurrentTool(brushTool);
+
 	// slice selector
 	// TODO - bind to model or something...
 	$("#sliceSelector").addEventListener("change", function(e){

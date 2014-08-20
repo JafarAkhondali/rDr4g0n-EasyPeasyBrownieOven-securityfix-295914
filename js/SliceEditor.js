@@ -5,6 +5,10 @@
 	 * Raster grid for painting a slice of brownie
 	 */
 	function SliceEditor(config){
+
+		// mixin event emitting superpowers
+		eventEmitter.call(this);
+
 		// TODO - ensure config.canvas
 		this.canvas = config.canvas;
 
@@ -30,13 +34,14 @@
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onDrag = this.onDrag.bind(this);
+		this.onMouseWheel = this.onMouseWheel.bind(this);
 
 		// listen for clicksies
 		this.canvas.addEventListener("mousedown", this.onMouseDown);
 		this.canvas.addEventListener("mouseup", this.onMouseUp);
+		this.canvas.addEventListener("mousewheel", this.onMouseWheel);
 
-		this.currColor = "#FFFFFF";
-		this.slice = 0;
+		this._slice = 0;
 
 		this.render();
 	}
@@ -57,7 +62,7 @@
 
 			for(var x = 0; x < this.brownieWidth; x++){
 				for(var y = 0; y < this.brownieHeight; y++){
-					val = this._modelGet([x, y, this.slice]);
+					val = this.modelGet([x, y, this.getSlice()]);
 
 					if(val){
 						this.context.fillStyle = val;
@@ -70,20 +75,34 @@
 
 		onMouseDown: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this._modelSet([px[0]-1, px[1]-1, this.slice], this.currColor);
+			this.emit("mousedown", px);
 
 			// listen for drag event
 			this.canvas.addEventListener("mousemove", this.onDrag);
 		},
 
 		onMouseUp: function(e){
+			var px = this.getTouchedPixel(getMousePos(e));
+			this.emit("mouseup", px);
+
 			// clear listener for drag
 			this.canvas.removeEventListener("mousemove", this.onDrag);
 		},
 
 		onDrag: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this._modelSet([px[0]-1, px[1]-1, this.slice], this.currColor);
+			this.emit("drag", px);
+		},
+
+		onMouseWheel: function(e){
+			e.preventDefault();
+			console.log(e.wheelDelta);
+			if(e.wheelDelta > 0){
+				this.incrementSlice();
+			} else {
+				this.decrementSlice();
+			}
+			this.render();
 		},
 
 		getTouchedPixel: function(mousePos){
@@ -97,18 +116,28 @@
 			this.currColor = color;
 		},
 
-		setSlice: function(slice){
-			// TODO - ensure slice is within bounds
-			this.slice = +slice;
-			this.render();
-		},
-
-		_modelSet: function(coords, val){
+		modelSet: function(coords, val){
 			this.model.model[this.model.createKey([coords[0], coords[1], coords[2]])] = val;
 		},
-		_modelGet: function(coords){
+		modelGet: function(coords){
 			return this.model.model[this.model.createKey([coords[0], coords[1], coords[2]])];
-		}
+		},
+
+		getSlice: function(){
+			return this._slice;
+		},
+		setSlice: function(slice){
+			// TODO - ensure slice is within bounds
+			this._slice = +slice;
+			this.render();
+		},
+		incrementSlice: function(){
+			// TODO - clamp
+			this._slice++;
+		},
+		decrementSlice: function(){
+			this._slice--;
+		},
 	}
 
 	// http://stackoverflow.com/a/17108084/957341
