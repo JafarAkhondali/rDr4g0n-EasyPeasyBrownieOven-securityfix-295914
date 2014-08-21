@@ -30,9 +30,13 @@
 	});
 
 	var brushTool = new BrushTool();
+	var eraserTool = new EraserTool();
 
 	toolbox.addTool("brush", brushTool);
+	toolbox.addTool("eraser", eraserTool);
+
 	toolbox.setCurrentTool(brushTool);
+	$("#toolbox").appendChild(toolbox.el);
 
 	// slice selector
 	// TODO - bind to model or something...

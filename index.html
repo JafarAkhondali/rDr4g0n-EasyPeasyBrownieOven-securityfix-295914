@@ -14,6 +14,7 @@
 		html, body {
 			height: 100%; width: 100%;
 			background-color: black;
+			color: #CCC;
 		}
 
 		.brownieViewer {
@@ -47,7 +48,11 @@
 			width: 30px;
 			height: 30px;
 			background-color: #555;
+			cursor: pointer;
+		}
+		.tool.selected {
 			color: white;
+			font-weight: bold;
 		}
 	</style>	
 </head>
@@ -57,10 +62,8 @@
 	<canvas id="sliceEditor" class="sliceEditor" data-width="500" data-height="500"></canvas>
 	<input id="sliceSelector" type="range" value="0" min="0" max="25">
 	<div id="colorPalette" class="colorPalette"></div>
-	<div id="toolbox" class="toolbox">
-		<div class="tool">e</div>
-		<div class="tool">b</div>
-	</div>
+
+	<div id="toolbox" class="toolbox"></div>
 
 	<script src="lib/three.js"></script>
 	<script src="lib/brownie.js"></script>
@@ -70,6 +73,7 @@
 	<script src="js/BrownieViewer.js"></script> 
 	<script src="js/Toolbox.js"></script> 
 	<script src="js/BrushTool.js"></script> 
+	<script src="js/EraserTool.js"></script> 
 	<script src="js/SliceEditor.js"></script> 
 	<script src="js/app.js"></script> 
 </body>

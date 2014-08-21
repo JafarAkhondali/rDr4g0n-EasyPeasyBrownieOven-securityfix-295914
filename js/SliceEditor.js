@@ -96,7 +96,6 @@
 
 		onMouseWheel: function(e){
 			e.preventDefault();
-			console.log(e.wheelDelta);
 			if(e.wheelDelta > 0){
 				this.incrementSlice();
 			} else {
@@ -117,7 +116,12 @@
 		},
 
 		modelSet: function(coords, val){
-			this.model.model[this.model.createKey([coords[0], coords[1], coords[2]])] = val;
+			// if val is null, delete the value
+			if(val === null){
+				delete this.model.model[this.model.createKey([coords[0], coords[1], coords[2]])];
+			} else {
+				this.model.model[this.model.createKey([coords[0], coords[1], coords[2]])] = val;
+			}
 		},
 		modelGet: function(coords){
 			return this.model.model[this.model.createKey([coords[0], coords[1], coords[2]])];

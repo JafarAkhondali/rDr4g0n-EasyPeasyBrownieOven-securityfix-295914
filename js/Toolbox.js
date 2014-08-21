@@ -6,6 +6,10 @@
 	 * SliceEditor.js
 	 */
 	function Toolbox(config){
+		this.el = document.createElement("div");
+		this.toolsEl = document.createElement("ul");
+		this.el.appendChild(this.toolsEl);
+		this.el.addEventListener("click", this.onClick.bind(this));
 
 		this.tools = {};
 
@@ -29,27 +33,45 @@
 		constructor: Toolbox,
 
 		addTool: function(id, tool){
+			tool.id = id;
 			this.tools[id] = tool;
-			// TODO - wire up toolbox event listeners
+			tool.el.setAttribute("data-id", id);
+			this.el.appendChild(tool.el);
 		},
 
 		setCurrentTool: function(tool){
+			// if a string was passed in, treat it
+			// as an id and lookup the tool
+			if(typeof tool === "string"){
+				tool = this.tools[tool];
+			}
+
 			// TODO - ensure this tool is in the toolbox?
 			this.currentTool = tool;
+			this.currentTool.select();
 		},
 
 		// proxy events to the currently selected tool
 		editorMouseDown: function(editor, coords){
 			// TODO - ensure a tool is selected
-			this.currentTool.onMouseDown(editor, coords);
+			this.currentTool.onEditorMouseDown(editor, coords);
 		},
 		editorMouseUp: function(editor, coords){
 			// TODO - ensure a tool is selected
-			this.currentTool.onMouseUp(editor, coords);
+			this.currentTool.onEditorMouseUp(editor, coords);
 		},
 		editorDrag: function(editor, coords){
 			// TODO - ensure a tool is selected
-			this.currentTool.onDrag(editor, coords);
+			this.currentTool.onEditorDrag(editor, coords);
+		},
+
+		// delegate to tool that was clicked
+		onClick: function(e){
+			// if a tool was clicked and its not the current tool
+			if(e.target.classList.contains("tool") && e.target.dataset.id !== this.currentTool.id){
+				this.currentTool.deselect();
+				this.setCurrentTool(e.target.dataset.id);
+			}
 		}
 	}
 

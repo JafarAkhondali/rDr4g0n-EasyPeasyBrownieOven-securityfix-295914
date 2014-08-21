@@ -64,8 +64,16 @@
 
 		updateBrownie: function(brownieData){
 			brownieData.forEach(function(val){
-				// TODO - unset
-				this.brownie.set.apply(null, val);
+
+				// if index 3, 4, and 5 are null, this is a delete
+				if(val[3] === null){
+					this.brownie.unset.apply(null, val);
+
+				// otherwise this is an add
+				} else {
+					this.brownie.set.apply(null, val);
+				}
+
 			}.bind(this));
 			this.renderBrownie();
 		},

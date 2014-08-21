@@ -25,6 +25,7 @@
 	BrownieModel.prototype = {
 		constuctor: BrownieModel,
 
+		// TODO - make onChange function for add, delete and edit
 		onChange: function(changes){
 			// general change event with no details
 			this.emit("change");
@@ -34,8 +35,11 @@
 			// find out waht the changes were and tell
 			// the brownie viewer to set/unset those vox
 			changes.forEach(function(change){
-				// TODO - unset pixel
-				if(!change.object[change.name]){
+				// TODO - handle delete in a separate
+				// mutation observer
+				if(change.type === "delete"){
+					// TODO - is using nulls to trigger delete here hacky?
+					brownieChangeset.push(this.parseKey(change.name).concat([null, null, null]));
 
 				// otherwise, set pixel with color
 				} else {
