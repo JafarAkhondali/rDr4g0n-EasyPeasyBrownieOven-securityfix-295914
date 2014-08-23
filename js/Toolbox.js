@@ -9,7 +9,8 @@
 		this.el = document.createElement("div");
 		this.toolsEl = document.createElement("ul");
 		this.el.appendChild(this.toolsEl);
-		this.el.addEventListener("click", this.onClick.bind(this));
+
+		this.onToolClick = this.onToolClick.bind(this);
 
 		this.tools = [];
 
@@ -39,7 +40,8 @@
 			// setup a dom element for this tool
 			toolEl.classList.add("tool");
 			toolEl.setAttribute("data-id", id);
-			toolEl.innerHTML = "<i class='"+ tool.icon +"'></i>";
+			toolEl.innerHTML = "<i class='tool-icon "+ tool.icon +"'></i>";
+			toolEl.addEventListener("click", this.onToolClick)
 
 			this.tools.push({
 				id: id,
@@ -78,10 +80,10 @@
 		},
 
 		// delegate to tool that was clicked
-		onClick: function(e){
+		onToolClick: function(e){
 			// if a tool was clicked and its not the current tool
-			if(e.target.classList.contains("tool") && e.target.dataset.id !== this.currentTool.id){
-				this.setCurrentTool(e.target.dataset.id);
+			if(e.currentTarget.dataset.id !== this.currentTool.id){
+				this.setCurrentTool(e.currentTarget.dataset.id);
 			}
 		},
 
