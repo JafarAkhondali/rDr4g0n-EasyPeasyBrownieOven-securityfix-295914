@@ -35,7 +35,7 @@
 	toolbox.addTool("brush", brushTool);
 	toolbox.addTool("eraser", eraserTool);
 
-	toolbox.setCurrentTool(brushTool);
+	toolbox.setCurrentTool("brush");
 	$("#toolbox").appendChild(toolbox.el);
 
 	// slice selector

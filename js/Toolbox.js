@@ -11,7 +11,7 @@
 		this.el.appendChild(this.toolsEl);
 		this.el.addEventListener("click", this.onClick.bind(this));
 
-		this.tools = {};
+		this.tools = [];
 
 		// listen to slice editors
 		if(config.editors){
@@ -33,45 +33,77 @@
 		constructor: Toolbox,
 
 		addTool: function(id, tool){
-			tool.id = id;
-			this.tools[id] = tool;
-			tool.el.setAttribute("data-id", id);
-			this.el.appendChild(tool.el);
+			var toolWrap,
+				toolEl = document.createElement("li");
+
+			// setup a dom element for this tool
+			toolEl.classList.add("tool");
+			toolEl.setAttribute("data-id", id);
+			toolEl.innerHTML = "<i class='"+ tool.icon +"'></i>";
+
+			this.tools.push({
+				id: id,
+				tool: tool,
+				el: toolEl
+			});
+
+			// put tool's dom element into tool li
+			this.toolsEl.appendChild(toolEl);
 		},
 
-		setCurrentTool: function(tool){
-			// if a string was passed in, treat it
-			// as an id and lookup the tool
-			if(typeof tool === "string"){
-				tool = this.tools[tool];
-			}
+		setCurrentTool: function(toolId){
+			var toolWrapped = this._getTool(toolId);
 
-			// TODO - ensure this tool is in the toolbox?
-			this.currentTool = tool;
-			this.currentTool.select();
+			// this tool aint in here bra!
+			if(!toolWrapped) return;
+
+			if(toolWrapped){
+				this.currentTool = toolWrapped;
+				this.selectToolEl(toolWrapped.el);
+			}
 		},
 
 		// proxy events to the currently selected tool
 		editorMouseDown: function(editor, coords){
 			// TODO - ensure a tool is selected
-			this.currentTool.onEditorMouseDown(editor, coords);
+			this.currentTool.tool.onEditorMouseDown(editor, coords);
 		},
 		editorMouseUp: function(editor, coords){
 			// TODO - ensure a tool is selected
-			this.currentTool.onEditorMouseUp(editor, coords);
+			this.currentTool.tool.onEditorMouseUp(editor, coords);
 		},
 		editorDrag: function(editor, coords){
 			// TODO - ensure a tool is selected
-			this.currentTool.onEditorDrag(editor, coords);
+			this.currentTool.tool.onEditorDrag(editor, coords);
 		},
 
 		// delegate to tool that was clicked
 		onClick: function(e){
 			// if a tool was clicked and its not the current tool
 			if(e.target.classList.contains("tool") && e.target.dataset.id !== this.currentTool.id){
-				this.currentTool.deselect();
 				this.setCurrentTool(e.target.dataset.id);
 			}
+		},
+
+		// NOTE: this returns the wrapped up tool, not
+		// the straight up tool object
+		_getTool: function(id){
+			for(var i = 0; i < this.tools.length; i++){
+				if (this.tools[i].id === id){
+					return this.tools[i];
+				}
+			}
+		},
+
+		selectToolEl: function(el){
+			this.tools.forEach(function(tool){
+				this.deselectToolEl(tool.el);
+			}.bind(this));
+			el.classList.add("selected");
+		},
+
+		deselectToolEl: function(el){
+			el.classList.remove("selected");
 		}
 	}
 

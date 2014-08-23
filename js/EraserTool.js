@@ -6,6 +6,8 @@
 	 */
 	function EraserTool(config){
 		BrushTool.call(this, config);
+
+		this.icon = "flaticon-eraser8";
 	}
 
 	EraserTool.prototype = Object.create(BrushTool.prototype);
