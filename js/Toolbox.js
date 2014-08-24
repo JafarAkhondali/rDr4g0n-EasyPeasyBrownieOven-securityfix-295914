@@ -58,7 +58,10 @@
 
 		setCurrentTool: function(toolId){
 
-			// TODO - destroy previous tool's vm if preset
+			// destroy previous tool's vm if preset
+			if(this.currentTool && this.currentTool.tool.vm){
+				teardownVM(this.currentTool.tool.vm);
+			}
 			
 			var toolWrapped = this._getTool(toolId);
 
@@ -137,6 +140,12 @@
 		bindVMEvents(vm);
 		vm.init();
 	}
+	function teardownVM(vm){
+		vm.el = null;
+		vm.model = null;
+		// TODO - unbind event listeners
+		vm.destroy();
+	}
 	function bindVMEvents(vm){
 		var func, selector, eventAction,
 			eventMap = vm.eventMap || {};
@@ -148,6 +157,7 @@
 			func = vm[eventMap[i]].bind(vm);
 
 			if (typeof (func) == "function") {
+				// TODO - event handlers that can be removed
 				vm.el.addEventListener(eventAction, function(e){
 					// TODO - cross browser `matches` method
 					if(e.target.webkitMatchesSelector(selector)){

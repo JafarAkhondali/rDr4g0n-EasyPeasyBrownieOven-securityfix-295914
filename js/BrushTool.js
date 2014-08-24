@@ -22,6 +22,9 @@
 				colorPaletteHTML.push('<div class="color" style="background-color: '+ color +';" data-color="'+ color +'"></div>');
 			});
 			this.el.querySelector("#colorPalette").innerHTML = colorPaletteHTML.join("");
+		},
+		destroy: function(){
+			
 		}
 	};
 
