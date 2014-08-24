@@ -55,7 +55,6 @@
 		newBrownie: function(brownie){
 			this.brownie = new Brownie(this.renderer);
 			var geo = this.brownie.getGeometry();
-			THREE.GeometryUtils.center(geo);
 			
 			this.mesh = new THREE.Mesh(geo, this.material);
 			this.scene.add(this.mesh);

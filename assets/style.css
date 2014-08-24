@@ -84,8 +84,14 @@ ul {
 	display: inline;
 	padding: 8px;
 }
+.tool:hover {
+	color: white;
+}
 .tool.selected {
 	color: #4CE806;
+}
+.tool.selecter:hover {
+	color: inherit;
 }
 
 /** TOOL PROPERTIES **/
