@@ -6,16 +6,54 @@
 	<link rel="stylesheet" href="assets/flaticon.css">
 	<link rel="stylesheet" href="assets/style.css">
 </head>
-<body>
+<body class="vbox">
+	<div class="hbox" style="width: 100%; height: 43px; background-color: #222; border-bottom: solid #666 1px;">
+		<ul id="fileMenu" class="fileMenu hbox">
+			<li><i class="flaticon-new10"></i></li>
+			<li><i class="flaticon-floppy1"></i></li>
+			<li><i class="flaticon-extract"></i></li>
+		</ul>
 
-	
+		<div class="vr"></div>
 
-	<div id="toolbox" class="toolbox"></div>
+		<div id="toolbox" class="toolbox hbox">
+			<!-- tools are inserted here -->
+		</div>
+	</div>
 
-	<canvas id="brownieViewer" class="brownieViewer" data-width="500" data-height="500"></canvas>
-	<canvas id="sliceEditor" class="sliceEditor" data-width="500" data-height="500"></canvas>
-	<input id="sliceSelector" type="range" value="0" min="0" max="25">
-	<div id="colorPalette" class="colorPalette"></div>
+	<div class="hbox" style="height: calc(100% - 43px);">
+
+		<div id="toolProperties" class="toolProperties">
+			<label>Size</label>
+			<input type="number" min="1" max="5" value="1">
+			<br>
+
+			<label>Shape</label>
+			<select>
+				<option value="square">Block</option>
+				<option value="round">Round</option>
+			</select>
+			<br>
+
+			<label>Palette</label>
+			<select>
+				<option value="NESBasic">NES Basic</option>
+				<option value="simple">Simple</option>
+			</select>
+			<br>
+
+			<div class="hr"></div>
+
+			<div id="colorPalette" class="colorPalette hbox"></div>	
+		</div>
+
+		<div class="vbox">
+			<canvas id="sliceEditor" class="sliceEditor" data-width="500" data-height="500"></canvas>
+			<input id="sliceSelector" type="range" value="0" min="0" max="25">
+		</div>
+
+		<canvas id="brownieViewer" class="brownieViewer" data-width="500" data-height="500"></canvas>
+	</div>
 
 	<script src="lib/three.js"></script>
 	<script src="lib/brownie.js"></script>

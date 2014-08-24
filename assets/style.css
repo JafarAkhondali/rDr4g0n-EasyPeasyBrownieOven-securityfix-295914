@@ -6,16 +6,44 @@
 
 html, body {
 	height: 100%; width: 100%;
-	background-color: black;
+	background-color: #555;
 	color: #CCC;
 }
 
-.brownieViewer {
-	float: right;
+ul {
+	list-style-type: none;
 }
 
-.rasterGridContainer {
-	float: left;
+.hbox {
+	display: flex;
+	flex-direction: row;
+}
+.vbox {
+	display: flex;
+	flex-direction: column;
+}
+.vr {
+	padding: 0 5px;
+	border-left: solid 1px #555;
+	height: 100%;
+	width: 1px;
+}
+.hr {
+	padding: 5px 0;
+	border-top: solid 1px #555;
+	height: 1px;
+	width: 100%;
+}
+
+
+.wrappyWrapWrapWrap {
+}
+
+.brownieViewer {
+}
+
+.sliceEditor {
+	padding: 10px;
 }
 
 .sliceSelector {
@@ -23,28 +51,60 @@ html, body {
 }
 
 .colorPalette {
-	width: 480px;
-	display: flex;
-	flex-direction: row;
 	flex-wrap: wrap;
+	padding: 5px;
 }
 .color {
 	width: 30px;
 	height: 30px;
 }
 
+/** FILE MENU **/
+.fileMenu {
+}
+.fileMenu li {
+	padding: 8px;
+	color: #AAA;
+	cursor: pointer;
+	font-size: 1.4em;
+}
+.fileMenu li:hover {
+	color: white;
+} 
+
+
+/** TOOLBOX and TOOLS **/
 .toolbox {
 	display: flex;
 	flex-direction: column;
 }
 .tool {
-	color: #333;
-	background-color: #666;
+	font-size: 1.4em;
+	color: #AAA;
 	cursor: pointer;
-	display: inline-block;
+	display: inline;
 	padding: 8px;
 }
 .tool.selected {
-	color: #680B27;
-	background-color: #E81857;
+	color: #4CE806;
+}
+
+/** TOOL PROPERTIES **/
+.toolProperties {
+	background-color: #333;
+	width: 200px;
+	flex-shrink: 0;
+}
+
+.toolProperties label {
+	display: inline-block;
+	width: 55px;
+	text-align: right;
+	margin: 7px 0;
+	font-size: .7em;
+	text-transform: uppercase;
+}
+.toolProperties input {
+	display: inline-block;
+	margin: 7px 0 7px 5px;
 }

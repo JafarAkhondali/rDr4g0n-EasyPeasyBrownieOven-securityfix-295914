@@ -36,7 +36,7 @@
 	toolbox.addTool("eraser", eraserTool);
 
 	toolbox.setCurrentTool("brush");
-	$("#toolbox").appendChild(toolbox.el);
+	$("#toolbox").insertBefore(toolbox.el, $("#toolbox").firstChild);
 
 	// slice selector
 	// TODO - bind to model or something...

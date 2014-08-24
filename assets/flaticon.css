@@ -11,11 +11,19 @@
 [class^="flaticon-"]:before, [class*=" flaticon-"]:before,
 [class^="flaticon-"]:after, [class*=" flaticon-"]:after {   
 	font-family: Flaticon;
-        font-size: 20px;
-font-style: normal;
+	font-style: normal;
 }.flaticon-eraser8:before {
 	content: "\e000";
 }
-.flaticon-pencil5:before {
+.flaticon-extract:before {
 	content: "\e001";
+}
+.flaticon-floppy1:before {
+	content: "\e002";
+}
+.flaticon-new10:before {
+	content: "\e003";
+}
+.flaticon-pencil5:before {
+	content: "\e004";
 }

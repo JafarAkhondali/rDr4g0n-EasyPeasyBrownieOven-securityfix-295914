@@ -8,6 +8,7 @@
 	function Toolbox(config){
 		this.el = document.createElement("div");
 		this.toolsEl = document.createElement("ul");
+		this.toolsEl.classList.add("hbox");
 		this.el.appendChild(this.toolsEl);
 
 		this.onToolClick = this.onToolClick.bind(this);

@@ -9,8 +9,9 @@
 
 		// TODO - expose various config options in UI
 		this.size = 1;
-		this.mode = "paint";
+		this.shape = "square";
 		this.currColor = "#FFFFFF";
+		this.palette = "NES Basic";
 
 		// bind context for editor event handlers
 		this.onEditorMouseDown = this.onEditorMouseDown.bind(this);
