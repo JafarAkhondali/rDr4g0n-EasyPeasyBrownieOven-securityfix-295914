@@ -5,9 +5,18 @@
 	 * Toolbox tool for erasing on SliceEditor.js
 	 */
 	function EraserTool(config){
-		BrushTool.call(this, config);
+		// BrushTool.call(this, config);
 
 		this.icon = "flaticon-eraser8";
+
+		// TODO - expose various config options in UI
+		this.size = 1;
+		this.shape = "square";
+
+		// bind context for editor event handlers
+		this.onEditorMouseDown = this.onEditorMouseDown.bind(this);
+		this.onEditorMouseUp = this.onEditorMouseUp.bind(this);
+		this.onEditorDrag = this.onEditorDrag.bind(this);
 	}
 
 	EraserTool.prototype = Object.create(BrushTool.prototype);
