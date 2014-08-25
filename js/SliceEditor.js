@@ -17,6 +17,9 @@
 		this.canvas.height = +this.canvas.dataset["height"];
 		this.context = this.canvas.getContext("2d");
 
+		// opacity of layer below the current layer
+		this.layerOpacity = config.layerOpacity || .25;
+
 		// TODO - bind model
 		this.model = config.model;
 		this.model.on("change", this.render, this);
@@ -52,7 +55,7 @@
 		render: function(){
 
 			// draw pixels
-			var val,
+			var val, underVal,
 				pxMultiplier = this.pxMultiplier;
 
 			// clear canvas
@@ -63,12 +66,27 @@
 			for(var x = 0; x < this.brownieWidth; x++){
 				for(var y = 0; y < this.brownieHeight; y++){
 					val = this.modelGet([x, y, this.getSlice()]);
+					underVal = this.modelGet([x, y, this.getSlice() - 1]);
 
+					// if a value should be set here
 					if(val){
 						this.context.fillStyle = val;
 						this.context.fillRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
+					
+					// if no value on this layer, but the layer below has something
+					} else if(underVal){
+						this.context.fillStyle = "rgba(" + hexColorToInt(underVal).join(",") +","+ this.layerOpacity +")";
+						this.context.fillRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
+
+						this.context.strokeStyle = underVal;
+						this.context.strokeRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
+						this.context.strokeStyle = "#444444";
+
+					// just draw an empty box, idiot
+					} else {
+						this.context.strokeRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
 					}
-					this.context.strokeRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
+					
 				}
 			}
 		},
@@ -172,6 +190,19 @@
 		} else if(evt.layerX || evt.layerX == 0){
 			return [evt.layerX, evt.layerY]
 		}
+	}
+
+	// takes hex color like "#FF0000" and returns an
+	// array of [r,g,b] ints
+	function hexColorToInt(hex){
+		var normalized = [];
+
+		hex = hex.replace("#", "");
+		for(var i = 0; i < 6; i+=2){
+			normalized.push(parseInt(hex.substr(i, 2), 16));
+		}
+
+		return normalized;
 	}
 
 	window.SliceEditor = SliceEditor;
