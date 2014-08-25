@@ -116,15 +116,26 @@
 		},
 
 		modelSet: function(coords, val){
+			var translatedCoords = this.translateOrigin(coords);
+
 			// if val is null, delete the value
 			if(val === null){
-				delete this.model.model[this.model.createKey([coords[0], coords[1], coords[2]])];
+				delete this.model.model[this.model.createKey([translatedCoords[0], translatedCoords[1], translatedCoords[2]])];
 			} else {
-				this.model.model[this.model.createKey([coords[0], coords[1], coords[2]])] = val;
+				this.model.model[this.model.createKey([translatedCoords[0], translatedCoords[1], translatedCoords[2]])] = val;
 			}
 		},
-		modelGet: function(coords){
-			return this.model.model[this.model.createKey([coords[0], coords[1], coords[2]])];
+		modelGet: function(coords){			
+			var translatedCoords = this.translateOrigin(coords);
+			return this.model.model[this.model.createKey([translatedCoords[0], translatedCoords[1], translatedCoords[2]])];
+		},
+
+		translateOrigin: function(coords){
+			return [
+				coords[0] - (this.brownieWidth * 0.5),
+				-coords[1] - (this.brownieHeight * 0.5),
+				coords[2]
+			];
 		},
 
 		getSlice: function(){
