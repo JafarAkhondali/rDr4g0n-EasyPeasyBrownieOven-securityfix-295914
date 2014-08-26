@@ -1,6 +1,8 @@
 (function(){
 	"use strict";
 
+	var LAYER_OPACITY = .25;
+
 	/**
 	 * Raster grid for painting a slice of brownie
 	 */
@@ -17,8 +19,7 @@
 		this.canvas.height = +this.canvas.dataset["height"];
 		this.context = this.canvas.getContext("2d");
 
-		// opacity of layer below the current layer
-		this.layerOpacity = config.layerOpacity || .25;
+		this.showGrid = config.showGrid;
 
 		// TODO - bind model
 		this.model = config.model;
@@ -54,41 +55,53 @@
 
 		render: function(){
 
-			// draw pixels
-			var val, underVal,
-				pxMultiplier = this.pxMultiplier;
+			var currLayer = [],
+				prevLayer = [],
+				pxMultiplier = this.pxMultiplier,
+				val, underVal;
 
 			// clear canvas
 			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-			this.context.strokeStyle = "#444444";
-
+			// draw grid and store other pixels to draw
+			this.context.strokeStyle = "#555555";
 			for(var x = 0; x < this.brownieWidth; x++){
 				for(var y = 0; y < this.brownieHeight; y++){
+					if(this.showGrid){
+						this.context.strokeRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
+					}
+
 					val = this.modelGet([x, y, this.getSlice()]);
 					underVal = this.modelGet([x, y, this.getSlice() - 1]);
 
 					// if a value should be set here
 					if(val){
-						this.context.fillStyle = val;
-						this.context.fillRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
-					
+						currLayer.push([x, y, val]);
+						
 					// if no value on this layer, but the layer below has something
 					} else if(underVal){
-						this.context.fillStyle = "rgba(" + hexColorToInt(underVal).join(",") +","+ this.layerOpacity +")";
-						this.context.fillRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
-
-						this.context.strokeStyle = underVal;
-						this.context.strokeRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
-						this.context.strokeStyle = "#444444";
-
-					// just draw an empty box, idiot
-					} else {
-						this.context.strokeRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
+						prevLayer.push([x, y, underVal]);
 					}
 					
 				}
 			}
+
+			console.log("butt");
+
+			// draw previous layer
+			prevLayer.forEach(function(px){
+				this.context.fillStyle = "rgba(" + hexColorToInt(px[2]).join(",") +","+ LAYER_OPACITY +")";
+				this.context.fillRect(px[0] * pxMultiplier, px[1] * pxMultiplier, pxMultiplier, pxMultiplier);
+				this.context.strokeStyle = px[2];
+				this.context.strokeRect(px[0] * pxMultiplier, px[1] * pxMultiplier, pxMultiplier, pxMultiplier);
+			}.bind(this));
+
+			// draw current layer
+			currLayer.forEach(function(px){
+				this.context.fillStyle = px[2];
+				this.context.fillRect(px[0] * pxMultiplier, px[1] * pxMultiplier, pxMultiplier, pxMultiplier);
+					
+			}.bind(this));
 		},
 
 		onMouseDown: function(e){
