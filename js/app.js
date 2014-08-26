@@ -42,8 +42,8 @@
 
 	// slice selector
 	// TODO - bind to model or something...
-	$("#sliceSelector").addEventListener("change", function(e){
-		sliceEditor.setSlice(e.target.value);
-	});
+	// $("#sliceSelector").addEventListener("change", function(e){
+	// 	sliceEditor.setSlice(e.target.value);
+	// });
 
 })();
