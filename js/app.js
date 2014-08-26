@@ -19,7 +19,7 @@
 		model: brownieModel
 	});
 
-	// editor for the mdoel
+	// editor for the model
 	var sliceEditor = new SliceEditor({
 		canvas: $("#sliceEditor"),
 		model: brownieModel,

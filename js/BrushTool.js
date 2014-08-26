@@ -10,6 +10,7 @@
 		},
 		setColor: function(e){
 			this.model.currColor = e.target.dataset.color;
+			this.el.querySelector("#currentColor").style.backgroundColor = this.model.currColor;
 		},
 		init: function(){
 			// hacky color palette stuff
@@ -22,9 +23,12 @@
 				colorPaletteHTML.push('<div class="color" style="background-color: '+ color +';" data-color="'+ color +'"></div>');
 			});
 			this.el.querySelector("#colorPalette").innerHTML = colorPaletteHTML.join("");
+
+			// show default selected color
+			this.el.querySelector("#currentColor").style.backgroundColor = this.model.currColor;
 		},
 		destroy: function(){
-			
+
 		}
 	};
 

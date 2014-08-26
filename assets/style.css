@@ -49,6 +49,8 @@ ul {
 	width: 100%;
 }
 
+
+/* BRUSH PROPERTIES SHEET */
 .colorPalette {
 	flex-wrap: wrap;
 	padding: 5px;
@@ -56,6 +58,12 @@ ul {
 .color {
 	width: 30px;
 	height: 30px;
+}
+.currentColor {
+	width: calc(100% - 10px);
+	height: 40px;
+	margin: 5px;
+	background-color: red;
 }
 
 /** FILE MENU **/
