@@ -22,7 +22,8 @@
 	// editor for the mdoel
 	var sliceEditor = new SliceEditor({
 		canvas: $("#sliceEditor"),
-		model: brownieModel
+		model: brownieModel,
+		showGrid: true
 	});
 
 	var toolbox = new Toolbox({

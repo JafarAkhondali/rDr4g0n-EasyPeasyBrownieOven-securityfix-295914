@@ -25,8 +25,7 @@
 
 		// TODO - use model dimensions to position camera better
 		this.camera = new THREE.PerspectiveCamera(75, this.canvas.width / this.canvas.height, .1, 100);
-		this.camera.position.set(this.model.width, this.model.height, this.model.depth);
-		this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+		this.camera.position.set(0, -this.model.height, this.model.depth);
 
 		this.light = new THREE.PointLight(0xFFFFFF);
 		this.light.position = this.camera.position.clone();
