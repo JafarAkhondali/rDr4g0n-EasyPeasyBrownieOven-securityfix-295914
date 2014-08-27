@@ -1,7 +1,8 @@
 (function(){
 	"use strict";
 
-	var LAYER_OPACITY = .25;
+	var LAYER_OPACITY = .25,
+		GRID_COLOR = "#555555";
 
 	/**
 	 * Raster grid for painting a slice of brownie
@@ -64,7 +65,7 @@
 			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
 			// draw grid and store other pixels to draw
-			this.context.strokeStyle = "#555555";
+			this.context.strokeStyle = GRID_COLOR;
 			for(var x = 0; x < this.brownieWidth; x++){
 				for(var y = 0; y < this.brownieHeight; y++){
 					if(this.showGrid){
@@ -82,11 +83,14 @@
 					} else if(underVal){
 						prevLayer.push([x, y, underVal]);
 					}
-					
 				}
 			}
 
-			console.log("butt");
+			// draw origin marker thing
+			this.context.fillStyle = GRID_COLOR;
+			this.context.beginPath();
+      		this.context.arc(this.canvas.width * 0.5, this.canvas.height * 0.5, 5, 0, 2 * Math.PI);
+      		this.context.fill();
 
 			// draw previous layer
 			prevLayer.forEach(function(px){
@@ -100,7 +104,6 @@
 			currLayer.forEach(function(px){
 				this.context.fillStyle = px[2];
 				this.context.fillRect(px[0] * pxMultiplier, px[1] * pxMultiplier, pxMultiplier, pxMultiplier);
-					
 			}.bind(this));
 		},
 
