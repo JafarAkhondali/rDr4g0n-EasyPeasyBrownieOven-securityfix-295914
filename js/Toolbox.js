@@ -59,8 +59,8 @@
 		setCurrentTool: function(toolId){
 
 			// destroy previous tool's vm if preset
-			if(this.currentTool && this.currentTool.tool.vm){
-				teardownVM(this.currentTool.tool.vm);
+			if(this.currentTool && this.currentTool.tool.propertyVM){
+				propertyVM.teardown();
 			}
 			
 			var toolWrapped = this._getTool(toolId);
@@ -71,14 +71,14 @@
 			// empty tool properties element
 			this.toolPropertiesEl.innerHTML = "";
 
-			// if tool properties vm is provided, set it up
-			if(toolWrapped.tool.vm){
-				setupVM(toolWrapped.tool.vm, toolWrapped.tool, this.toolPropertiesEl);
-			}
-
 			if(toolWrapped){
 				this.currentTool = toolWrapped;
 				this.selectToolEl(toolWrapped.el);
+
+				// if a property sheet is present, use it
+				if(this.currentTool.tool.propertyVM){
+					this.toolPropertiesEl.appendChild(this.currentTool.tool.propertyVM.el);
+				}
 			}
 		},
 
@@ -123,48 +123,6 @@
 
 		deselectToolEl: function(el){
 			el.classList.remove("selected");
-		}
-	}
-
-
-
-	// TODO - move these guys into general utils
-	// or possibly onto some sorta VM object
-	// and inherit them or something?
-	function setupVM(vm, model, el){
-		// insert template into DOM
-		// TODO - create empty node if no el supplied
-		el.innerHTML = vm.template;	
-		vm.el = el;
-		vm.model = model;
-		bindVMEvents(vm);
-		vm.init();
-	}
-	function teardownVM(vm){
-		vm.el = null;
-		vm.model = null;
-		// TODO - unbind event listeners
-		vm.destroy();
-	}
-	function bindVMEvents(vm){
-		var func, selector, eventAction,
-			eventMap = vm.eventMap || {};
-
-		for(var i in eventMap){
-			selector = i.split(" ");
-			eventAction = selector.shift();
-			selector = selector.join(" ");
-			func = vm[eventMap[i]].bind(vm);
-
-			if (typeof (func) == "function") {
-				// TODO - event handlers that can be removed
-				vm.el.addEventListener(eventAction, function(e){
-					// TODO - cross browser `matches` method
-					if(e.target.webkitMatchesSelector(selector)){
-						func(e);
-					}
-				});
-			}
 		}
 	}
 
