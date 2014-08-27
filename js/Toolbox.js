@@ -57,12 +57,6 @@
 		},
 
 		setCurrentTool: function(toolId){
-
-			// destroy previous tool's vm if preset
-			if(this.currentTool && this.currentTool.tool.propertyVM){
-				propertyVM.teardown();
-			}
-			
 			var toolWrapped = this._getTool(toolId);
 
 			// this tool aint in here bra!

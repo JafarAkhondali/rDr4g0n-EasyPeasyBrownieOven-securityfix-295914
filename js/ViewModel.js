@@ -52,11 +52,6 @@
 			}
 		},
 
-		teardown: function(){
-			this.el = this.model = this.init = null;
-			// TODO - unbind event listeners
-		},
-
 		setModel: function(model){
 			this.model = model;
 		}
