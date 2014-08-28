@@ -33,18 +33,15 @@
 		this.scene = new THREE.Scene();
 		this.scene.add(this.light);
 
-		// cursor position hint brownie
-		this.cursorBrownie = new Brownie(this.renderer);
-		this.cursorLastPos = [0,0,0];
+		// cursor hint voxel
 		this.cursorMesh = new THREE.Mesh(
-			this.cursorBrownie.getGeometry(),
-			new THREE.MeshPhongMaterial({
-				transparent: true,
-				opacity: 0.5,
-				color: 0x00FFFF
+			new THREE.CubeGeometry(1, 1, 1),
+			new THREE.MeshBasicMaterial({
+				wireframe: true,
+				wireframeLinewidth: 3,
+				color: "#4CE806"
 			})
 		);
-		this.scene.add(this.cursorMesh);
 
 		// the material won't change each render,
 		// so keep a single material to reuse
@@ -70,6 +67,10 @@
 			
 			// TODO - remove previous brownie's mesh from scene
 			this.mesh = new THREE.Mesh(geo, this.material);
+
+			// add cursor hint
+			this.mesh.add(this.cursorMesh);
+
 			this.scene.add(this.mesh);
 			this.renderScene();
 		},
@@ -102,17 +103,12 @@
 
 		autoRotateMesh: function(){
 			this.mesh.rotation.y += 0.01;
-			this.cursorMesh.rotation.y = this.mesh.rotation.y;
 			this.renderScene();
 			requestAnimationFrame(this.autoRotateMesh);
 		},
 
 		updateCursorPosition: function(coords){
-			this.cursorBrownie.unset.apply(null, this.cursorLastPos);
-			this.cursorBrownie.set.apply(null, coords.concat([1,1,1]));
-			this.cursorBrownie.rebuild();
-			this.renderScene();
-			this.cursorLastPos = coords;
+			this.cursorMesh.position.set(coords[0] + 0.5, coords[1] + 0.5, coords[2] + 0.5);
 		}
 	}
 

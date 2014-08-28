@@ -52,8 +52,6 @@
 		onEditorMouseDown: function(editor, coords){
 			editor.modelSet([coords[0]-1, coords[1]-1, editor.getSlice()], this.currColor);
 			console.log("brush mousedown at", coords, editor.getSlice(), this.currColor);
-
-			editor.on("mousemove", this.onDrag);
 		},
 
 		onEditorDrag: function(editor, coords){
@@ -61,7 +59,6 @@
 		},
 
 		onEditorMouseUp: function(editor, coords){
-			editor.off("mousemove", this.onDrag);
 		}
 	}
 
