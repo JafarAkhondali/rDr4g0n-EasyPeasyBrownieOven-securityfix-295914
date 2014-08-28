@@ -30,8 +30,6 @@
 	EraserTool.prototype.onEditorMouseDown = function(editor, coords){
 		editor.modelSet([coords[0]-1, coords[1]-1, editor.getSlice()], null);
 		console.log("eraser mousedown at", coords, editor.getSlice(), null);
-
-		editor.on("mousemove", this.onDrag);
 	};
 
 	EraserTool.prototype.onEditorDrag = function(editor, coords){
@@ -39,7 +37,6 @@
 	};
 
 	EraserTool.prototype.onEditorMouseUp = function(editor, coords){
-		editor.off("mousemove", this.onDrag);
 	}
 
 	window.EraserTool = EraserTool;

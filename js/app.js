@@ -34,6 +34,10 @@
 		// TODO - gah this line is a travesty
 		brownieViewer.updateCursorPosition(sliceEditor.translateOrigin(coords.concat(sliceEditor.getSlice())));
 	});
+	// hide cursor hint on mouseout
+	sliceEditor.on("mouseout", function(coords){
+		brownieViewer.updateCursorPosition();
+	});
 
 	var toolbox = new Toolbox({
 		editors: [sliceEditor],

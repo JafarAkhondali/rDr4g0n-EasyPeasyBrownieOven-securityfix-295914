@@ -108,7 +108,15 @@
 		},
 
 		updateCursorPosition: function(coords){
-			this.cursorMesh.position.set(coords[0] + 0.5, coords[1] + 0.5, coords[2] + 0.5);
+			// hide cursor
+			if(!coords){
+				this.mesh.remove(this.cursorMesh);
+
+			// move cursor
+			} else {
+				this.mesh.add(this.cursorMesh);
+				this.cursorMesh.position.set(coords[0] + 0.5, coords[1] + 0.5, coords[2] + 0.5);
+			}
 		}
 	}
 

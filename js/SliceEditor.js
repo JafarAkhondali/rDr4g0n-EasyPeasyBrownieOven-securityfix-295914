@@ -2,7 +2,8 @@
 	"use strict";
 
 	var LAYER_OPACITY = .25,
-		GRID_COLOR = "#555555";
+		GRID_COLOR = "#555555",
+		CURSOR_HINT_COLOR = "#4CE806";
 
 	/**
 	 * Raster grid for painting a slice of brownie
@@ -22,9 +23,11 @@
 
 		this.showGrid = config.showGrid;
 
+		this.cursorPos = [];
+
 		// TODO - bind model
 		this.model = config.model;
-		this.model.on("change", this.render, this);
+		// this.model.on("change", this.render, this);
 
 		// determine brownie width
 		this.brownieWidth = this.model.width;
@@ -41,15 +44,19 @@
 		this.onDrag = this.onDrag.bind(this);
 		this.onMouseWheel = this.onMouseWheel.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
+		this.onMouseOut = this.onMouseOut.bind(this);
 
 		// listen for clicksies
+		// TODO - event object would be cleaner here
 		this.canvas.addEventListener("mousedown", this.onMouseDown);
 		this.canvas.addEventListener("mouseup", this.onMouseUp);
 		this.canvas.addEventListener("mousewheel", this.onMouseWheel);
 		this.canvas.addEventListener("mousemove", this.onMouseMove);
+		this.canvas.addEventListener("mouseout", this.onMouseOut);
 
 		this._slice = 0;
 
+		this.render = this.render.bind(this);
 		this.render();
 	}
 
@@ -70,9 +77,6 @@
 			this.context.strokeStyle = GRID_COLOR;
 			for(var x = 0; x < this.brownieWidth; x++){
 				for(var y = 0; y < this.brownieHeight; y++){
-					if(this.showGrid){
-						this.context.strokeRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
-					}
 
 					val = this.modelGet([x, y, this.getSlice()]);
 					underVal = this.modelGet([x, y, this.getSlice() - 1]);
@@ -84,6 +88,11 @@
 					// if no value on this layer, but the layer below has something
 					} else if(underVal){
 						prevLayer.push([x, y, underVal]);
+
+					// if there is nothing on this pixel, and
+					// grid should be shown, draw the grid box
+					} else if(this.showGrid){
+						this.context.strokeRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
 					}
 				}
 			}
@@ -107,6 +116,14 @@
 				this.context.fillStyle = px[2];
 				this.context.fillRect(px[0] * pxMultiplier, px[1] * pxMultiplier, pxMultiplier, pxMultiplier);
 			}.bind(this));
+
+			// draw cursor hint
+			if(this.cursorPos.length){
+				this.context.strokeStyle = CURSOR_HINT_COLOR;
+				this.context.strokeRect(this.cursorPos[0] * pxMultiplier, this.cursorPos[1] * pxMultiplier, pxMultiplier, pxMultiplier);
+			}
+			
+			window.requestAnimationFrame(this.render);
 		},
 
 		onMouseDown: function(e){
@@ -137,14 +154,20 @@
 			} else {
 				this.decrementSlice();
 			}
-			this.render();
+			// this.render();
 		},
 
 		onMouseMove: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
 			// HACK - for some reason hover pixels are off by one
 			px[0]--; px[1]--;
+			this.cursorPos = px;
 			this.emit("mousemove", px);
+		},
+
+		onMouseOut: function(e){
+			this.cursorPos = [];
+			this.emit("mouseout");
 		},
 
 		getTouchedPixel: function(mousePos){
@@ -187,7 +210,7 @@
 		setSlice: function(slice){
 			// TODO - ensure slice is within bounds
 			this._slice = +slice;
-			this.render();
+			// this.render();
 		},
 		incrementSlice: function(){
 			// TODO - clamp
