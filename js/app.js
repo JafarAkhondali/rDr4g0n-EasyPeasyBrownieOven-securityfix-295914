@@ -26,6 +26,15 @@
 		showGrid: true
 	});
 
+	// brownieViewer wants to show a cursor hint
+	// when the mouse moves over a sliceEditor
+	// TODO - when slice changes, the cursor position
+	// should be updated
+	sliceEditor.on("mousemove", function(coords){
+		// TODO - gah this line is a travesty
+		brownieViewer.updateCursorPosition(sliceEditor.translateOrigin(coords.concat(sliceEditor.getSlice())));
+	});
+
 	var toolbox = new Toolbox({
 		editors: [sliceEditor],
 		toolPropertiesEl: $("#toolProperties")

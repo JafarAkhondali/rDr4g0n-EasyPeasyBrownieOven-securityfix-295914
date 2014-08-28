@@ -40,11 +40,13 @@
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onDrag = this.onDrag.bind(this);
 		this.onMouseWheel = this.onMouseWheel.bind(this);
+		this.onMouseMove = this.onMouseMove.bind(this);
 
 		// listen for clicksies
 		this.canvas.addEventListener("mousedown", this.onMouseDown);
 		this.canvas.addEventListener("mouseup", this.onMouseUp);
 		this.canvas.addEventListener("mousewheel", this.onMouseWheel);
+		this.canvas.addEventListener("mousemove", this.onMouseMove);
 
 		this._slice = 0;
 
@@ -136,6 +138,13 @@
 				this.decrementSlice();
 			}
 			this.render();
+		},
+
+		onMouseMove: function(e){
+			var px = this.getTouchedPixel(getMousePos(e));
+			// HACK - for some reason hover pixels are off by one
+			px[0]--; px[1]--;
+			this.emit("mousemove", px);
 		},
 
 		getTouchedPixel: function(mousePos){
