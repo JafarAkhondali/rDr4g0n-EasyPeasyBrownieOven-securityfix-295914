@@ -51,6 +51,26 @@
 			this.emit("changeset", brownieChangeset);
 		},
 
+		// returns all points for a slice
+		// TODO - take slice axis as an arg
+		// TODO - this is probably expensive...
+		getSlice: function(slice){
+			var coordsArr,
+				// 0 is x, 1 is y, 2 is z
+				sliceAxis = 2,
+				sliceData = [];
+			for(var coords in this.model){
+				coordsArr = this.parseKey(coords);
+
+				// if this px is on the specified slice
+				if(coordsArr[sliceAxis] === slice){
+					// TODO - return hex color instead of brownie color?
+					sliceData.push(coordsArr.concat(hexColorToBrownieColor(this.model[coords])));
+				}
+			}
+			return sliceData;
+		},
+
 		// returns [x,y,z] from a model key
 		parseKey: function(key){
 			return key.split(",").map(function(key){ return +key; });

@@ -26,10 +26,24 @@
 		showGrid: true
 	});
 
-	// brownieViewer wants to show a cursor hint
-	// when the mouse moves over a sliceEditor
-	// TODO - when slice changes, the cursor position
-	// should be updated
+	// HACK - just getting this working for now
+	sliceEditor.canvas.addEventListener("mousewheel", function(e){
+		var sliceData;
+
+		sliceData = brownieModel.getSlice(sliceEditor.getSlice());
+		brownieViewer.showSlice(sliceData);
+	});
+	brownieViewer.canvas.addEventListener("click", function(e){
+		if(brownieViewer.sliced){
+			brownieViewer.unshowSlice();
+		} else {
+			brownieViewer.showSlice(brownieModel.getSlice(sliceEditor.getSlice()));
+		}
+	});
+
+	// cursor hinting for brownie viewer and slice editor
+	// TODO - these 2 listeners may belong on toolbox
+	// instead of up here at app level
 	sliceEditor.on("mousemove", function(coords){
 		// TODO - gah this line is a travesty
 		brownieViewer.updateCursorPosition(sliceEditor.translateOrigin(coords.concat(sliceEditor.getSlice())));

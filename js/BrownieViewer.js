@@ -33,23 +33,33 @@
 		this.scene = new THREE.Scene();
 		this.scene.add(this.light);
 
-		// cursor hint voxel
-		this.cursorMesh = new THREE.Mesh(
-			new THREE.CubeGeometry(1, 1, 1),
-			new THREE.MeshBasicMaterial({
+		this.brownies = {};
+		this.meshes = {};
+		this.materials = {
+			brownie: new THREE.MeshPhongMaterial({
+				color: 0xFFFFFF,
+				vertexColors: THREE.VertexColors,
+				specular: 0
+			}),
+			cursor: new THREE.MeshBasicMaterial({
 				wireframe: true,
 				wireframeLinewidth: 3,
 				color: "#4CE806"
-			})
-		);
+			}),
+			brownieTransparent: new THREE.MeshPhongMaterial({
+				color: 0xFFFFFF,
+				vertexColors: THREE.VertexColors,
+				specular: 0,
+				transparent: true,
+				opacity: 0.35
+			}),
+		};
 
-		// the material won't change each render,
-		// so keep a single material to reuse
-		this.material = new THREE.MeshPhongMaterial({
-			color: 0xFFFFFF,
-			vertexColors: THREE.VertexColors,
-			specular: 0
-		});
+		// cursor hint voxel
+		this.meshes["cursor"] = new THREE.Mesh(
+			new THREE.CubeGeometry(1, 1, 1),
+			this.materials["cursor"]
+		);
 
 		this.newBrownie();
 
@@ -62,37 +72,90 @@
 		constructor: BrownieViewer,
 
 		newBrownie: function(brownie){
-			this.brownie = new Brownie(this.renderer);
-			var geo = this.brownie.getGeometry();
+			this.brownies["brownie"] = new Brownie(this.renderer);
+			var geo = this.brownies["brownie"].getGeometry();
 			
 			// TODO - remove previous brownie's mesh from scene
-			this.mesh = new THREE.Mesh(geo, this.material);
+			this.meshes["brownie"] = new THREE.Mesh(geo, this.materials["brownie"]);
 
 			// add cursor hint
-			this.mesh.add(this.cursorMesh);
+			this.meshes["brownie"].add(this.meshes["cursor"]);
 
-			this.scene.add(this.mesh);
+			this.scene.add(this.meshes["brownie"]);
 			this.renderScene();
 		},
 
 		updateBrownie: function(brownieData){
+			// if a slice brownie is available,
+			// update it as well
+			var slice = this.brownies["slice"];
+
 			brownieData.forEach(function(val){
 
 				// if index 3, 4, and 5 are null, this is a delete
 				if(val[3] === null){
-					this.brownie.unset.apply(null, val);
+					if(slice) slice.unset.apply(null, val);
+					this.brownies["brownie"].unset.apply(null, val);
 
 				// otherwise this is an add
 				} else {
-					this.brownie.set.apply(null, val);
+					if(slice) slice.set.apply(null, val);
+					this.brownies["brownie"].set.apply(null, val);
 				}
 
 			}.bind(this));
 			this.renderBrownie();
 		},
 
+		// make brownie translucent and show the
+		// current slice
+		showSlice: function(sliceData){
+			var sliceBrownie = this.brownies["slice"] = new Brownie(this.renderer);
+
+			this.meshes["brownie"].material = this.materials["brownieTransparent"];
+
+			// remove previous slice
+			this.meshes["brownie"].remove(this.meshes["slice"]);
+
+			this.meshes["slice"] = new THREE.Mesh(
+				sliceBrownie.getGeometry(),
+				this.materials["brownie"]
+			);
+
+			// add new slice mesh
+			this.meshes["brownie"].add(this.meshes["slice"]);
+
+			// update slice mesh
+			sliceData.forEach(function(val){
+				sliceBrownie.set.apply(null, val);
+			});
+			sliceBrownie.rebuild();
+
+			this.renderScene();
+
+			// to determine if this thing is
+			// sliced or not
+			this.sliced = true;
+		},
+
+		// restore brownie to original material
+		// and remove slice
+		unshowSlice: function(){
+			this.meshes["brownie"].material = this.materials["brownie"];
+			// remove previous slice
+			this.meshes["brownie"].remove(this.meshes["slice"]);
+			// remove slice brownie
+			this.brownies["slice"] = null;
+
+			// to determine if this thing is
+			// sliced or not
+			this.sliced = false;
+		},
+
 		renderBrownie: function(){
-			this.brownie.rebuild();
+			for(var i in this.brownies){
+				this.brownies[i].rebuild();
+			}
 			this.renderScene();
 		},
 
@@ -102,7 +165,8 @@
 		},
 
 		autoRotateMesh: function(){
-			this.mesh.rotation.y += 0.01;
+			// TODO - rotate camera instead of mesh?
+			this.meshes["brownie"].rotation.y += 0.01;
 			this.renderScene();
 			requestAnimationFrame(this.autoRotateMesh);
 		},
@@ -110,12 +174,12 @@
 		updateCursorPosition: function(coords){
 			// hide cursor
 			if(!coords){
-				this.mesh.remove(this.cursorMesh);
+				this.meshes["brownie"].remove(this.meshes["cursor"]);
 
 			// move cursor
 			} else {
-				this.mesh.add(this.cursorMesh);
-				this.cursorMesh.position.set(coords[0] + 0.5, coords[1] + 0.5, coords[2] + 0.5);
+				this.meshes["brownie"].add(this.meshes["cursor"]);
+				this.meshes["cursor"].position.set(coords[0] + 0.5, coords[1] + 0.5, coords[2] + 0.5);
 			}
 		}
 	}
