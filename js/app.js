@@ -26,6 +26,11 @@
 		showGrid: true
 	});
 
+	window.onresize = function(){
+		sliceEditor.resizeCanvas();
+		brownieViewer.resizeCanvas();
+	};
+
 	// HACK - just getting this working for now
 	sliceEditor.canvas.addEventListener("mousewheel", function(e){
 		var sliceData;

@@ -13,21 +13,6 @@
 		// mixin event emitting superpowers
 		eventEmitter.call(this);
 
-		// TODO - ensure el exists
-		this.el = config.el;
-
-		this.canvas = document.createElement("canvas");
-		this.canvas.width = Math.min(this.el.offsetHeight, this.el.offsetWidth);
-		this.canvas.height = Math.min(this.el.offsetHeight, this.el.offsetWidth);
-		this.el.appendChild(this.canvas);
-
-		this.context = this.canvas.getContext("2d");
-
-		this.showGrid = config.showGrid;
-
-		this.cursorPos = [];
-
-		// TODO - bind model
 		this.model = config.model;
 		// this.model.on("change", this.render, this);
 
@@ -37,8 +22,18 @@
 		// determine brownie height
 		this.brownieHeight = this.model.height;
 
-		// ratio is always square
-		this.pxMultiplier = Math.min(this.canvas.width / this.brownieWidth, this.canvas.height / this.brownieHeight);
+		// TODO - ensure el exists
+		this.el = config.el;
+
+		this.canvas = document.createElement("canvas");
+		this.resizeCanvas();
+		this.el.appendChild(this.canvas);
+
+		this.context = this.canvas.getContext("2d");
+
+		this.showGrid = config.showGrid;
+
+		this.cursorPos = [];
 		
 		// bind context for event listeners
 		this.onMouseDown = this.onMouseDown.bind(this);
@@ -126,6 +121,15 @@
 			}
 			
 			window.requestAnimationFrame(this.render);
+		},
+
+		// if containing element size changes,
+		// resize the canvas
+		resizeCanvas: function(){
+			this.canvas.width = Math.min(this.el.clientHeight, this.el.clientWidth);
+			this.canvas.height = Math.min(this.el.clientHeight, this.el.clientWidth);
+			// ratio is always square
+			this.pxMultiplier = Math.min(this.canvas.width / this.brownieWidth, this.canvas.height / this.brownieHeight);
 		},
 
 		onMouseDown: function(e){

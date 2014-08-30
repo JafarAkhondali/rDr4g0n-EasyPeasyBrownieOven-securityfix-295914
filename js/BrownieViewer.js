@@ -16,16 +16,16 @@
 		this.el = config.el;
 
 		this.canvas = document.createElement("canvas");
-		this.canvas.width = Math.min(this.el.offsetWidth, this.el.offsetHeight);
-		this.canvas.height = Math.min(this.el.offsetWidth, this.el.offsetHeight);
-		this.el.appendChild(this.canvas);
 		
 		this.renderer = new THREE.WebGLRenderer({
 			canvas: this.canvas
 		});
 
+		this.resizeCanvas();
+		this.el.appendChild(this.canvas);
+
 		// TODO - use model dimensions to position camera better
-		this.camera = new THREE.PerspectiveCamera(75, this.canvas.width / this.canvas.height, .1, 100);
+		this.camera = new THREE.PerspectiveCamera(65, this.canvas.width / this.canvas.height, 1, 1000);
 		this.camera.position.set(0, -this.model.height, this.model.depth);
 
 		this.light = new THREE.PointLight(0xFFFFFF);
@@ -183,6 +183,12 @@
 				this.meshes["brownie"].add(this.meshes["cursor"]);
 				this.meshes["cursor"].position.set(coords[0] + 0.5, coords[1] + 0.5, coords[2] + 0.5);
 			}
+		},
+
+		resizeCanvas: function(){
+			this.canvas.width = Math.min(this.el.clientHeight, this.el.clientWidth);
+			this.canvas.height = Math.min(this.el.clientHeight, this.el.clientWidth);
+			this.renderer.setSize(Math.min(this.el.clientHeight, this.el.clientWidth), Math.min(this.el.clientHeight, this.el.clientWidth));
 		}
 	}
 
