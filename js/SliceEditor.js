@@ -13,12 +13,14 @@
 		// mixin event emitting superpowers
 		eventEmitter.call(this);
 
-		// TODO - ensure config.canvas
-		this.canvas = config.canvas;
+		// TODO - ensure el exists
+		this.el = config.el;
 
-		// TODO - probably a better way to set width/height
-		this.canvas.width = +this.canvas.dataset["width"];
-		this.canvas.height = +this.canvas.dataset["height"];
+		this.canvas = document.createElement("canvas");
+		this.canvas.width = Math.min(this.el.offsetHeight, this.el.offsetWidth);
+		this.canvas.height = Math.min(this.el.offsetHeight, this.el.offsetWidth);
+		this.el.appendChild(this.canvas);
+
 		this.context = this.canvas.getContext("2d");
 
 		this.showGrid = config.showGrid;

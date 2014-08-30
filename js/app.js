@@ -15,13 +15,13 @@
 
 	// 3D view of our model
 	var brownieViewer = new BrownieViewer({
-		canvas: $("#brownieViewer"),
+		el: $("#brownieViewer"),
 		model: brownieModel
 	});
 
 	// editor for the model
 	var sliceEditor = new SliceEditor({
-		canvas: $("#sliceEditor"),
+		el: $("#sliceEditor"),
 		model: brownieModel,
 		showGrid: true
 	});

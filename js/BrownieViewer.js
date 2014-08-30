@@ -12,12 +12,13 @@
 		this.model = config.model;
 		this.model.on("changeset", this.updateBrownie, this);
 
-		// TODO - ensure canvas exists
-		this.canvas = config.canvas;
+		// TODO - ensure el exists
+		this.el = config.el;
 
-		// TODO - probably a better way to set width/height
-		this.canvas.width = +this.canvas.dataset["width"];
-		this.canvas.height = +this.canvas.dataset["height"];
+		this.canvas = document.createElement("canvas");
+		this.canvas.width = Math.min(this.el.offsetWidth, this.el.offsetHeight);
+		this.canvas.height = Math.min(this.el.offsetWidth, this.el.offsetHeight);
+		this.el.appendChild(this.canvas);
 		
 		this.renderer = new THREE.WebGLRenderer({
 			canvas: this.canvas
@@ -52,7 +53,7 @@
 				specular: 0,
 				transparent: true,
 				opacity: 0.35
-			}),
+			})
 		};
 
 		// cursor hint voxel
@@ -61,7 +62,8 @@
 			this.materials["cursor"]
 		);
 
-		this.newBrownie();
+		// base brownie
+		this.newBrownie(this.brownieSize);
 
 		// auto-rotate meshes
 		this.autoRotateMesh = this.autoRotateMesh.bind(this);
@@ -71,7 +73,7 @@
 	BrownieViewer.prototype = {
 		constructor: BrownieViewer,
 
-		newBrownie: function(brownie){
+		newBrownie: function(){
 			this.brownies["brownie"] = new Brownie(this.renderer);
 			var geo = this.brownies["brownie"].getGeometry();
 			
