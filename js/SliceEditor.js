@@ -225,6 +225,18 @@
 		decrementSlice: function(){
 			this._slice--;
 		},
+
+		updateModel: function(model){
+			this.model = model;
+
+			// determine brownie width
+			this.brownieWidth = this.model.width;
+
+			// determine brownie height
+			this.brownieHeight = this.model.height;
+
+			this.resizeCanvas();
+		}
 	}
 
 	// http://stackoverflow.com/a/17108084/957341

@@ -73,9 +73,14 @@
 	BrownieViewer.prototype = {
 		constructor: BrownieViewer,
 
-		newBrownie: function(){
-			this.brownies["brownie"] = new Brownie(this.renderer);
+		newBrownie: function(brownie){
+
+			this.brownies["brownie"] = brownie || new Brownie(this.renderer);
+			this.brownies["brownie"].rebuild();
 			var geo = this.brownies["brownie"].getGeometry();
+
+			// remove old brownie from scene
+			this.scene.remove(this.meshes["brownie"]);
 			
 			// TODO - remove previous brownie's mesh from scene
 			this.meshes["brownie"] = new THREE.Mesh(geo, this.materials["brownie"]);
@@ -189,6 +194,15 @@
 			this.canvas.width = Math.min(this.el.clientHeight, this.el.clientWidth);
 			this.canvas.height = Math.min(this.el.clientHeight, this.el.clientWidth);
 			this.renderer.setSize(Math.min(this.el.clientHeight, this.el.clientWidth), Math.min(this.el.clientHeight, this.el.clientWidth));
+		},
+
+		updateModel: function(model, brownie){
+			this.model.off("changeset", this.updateBrownie, this);
+			this.model = model;
+			this.model.on("changeset", this.updateBrownie, this);
+			this.camera.position.set(0, -this.model.height, this.model.depth);
+			this.newBrownie(brownie);
+			this.resizeCanvas();
 		}
 	}
 

@@ -10,72 +10,112 @@
 		return document.querySelectorAll(selector);
 	};
 
-	// our main model dude guy
-	var brownieModel = new BrownieModel(24, 24, 24);
+	var sliceEditor, brownieViewer, brownieModel;
 
-	// 3D view of our model
-	var brownieViewer = new BrownieViewer({
-		el: $("#brownieViewer"),
-		model: brownieModel
-	});
+	function init(){
 
-	// editor for the model
-	var sliceEditor = new SliceEditor({
-		el: $("#sliceEditor"),
-		model: brownieModel,
-		showGrid: true
-	});
+		// our main model dude guy
+		brownieModel = new BrownieModel(24, 24, 24);
 
-	window.onresize = function(){
-		sliceEditor.resizeCanvas();
-		brownieViewer.resizeCanvas();
-	};
+		// 3D view of our model
+		brownieViewer = new BrownieViewer({
+			el: $("#brownieViewer"),
+			model: brownieModel
+		});
 
-	// HACK - just getting this working for now
-	sliceEditor.canvas.addEventListener("mousewheel", function(e){
-		var sliceData;
+		// editor for the model
+		sliceEditor = new SliceEditor({
+			el: $("#sliceEditor"),
+			model: brownieModel,
+			showGrid: true
+		});
 
-		sliceData = brownieModel.getSlice(sliceEditor.getSlice());
-		brownieViewer.showSlice(sliceData);
-	});
-	brownieViewer.canvas.addEventListener("click", function(e){
-		if(brownieViewer.sliced){
-			brownieViewer.unshowSlice();
-		} else {
-			brownieViewer.showSlice(brownieModel.getSlice(sliceEditor.getSlice()));
-		}
-	});
+		window.onresize = function(){
+			sliceEditor.resizeCanvas();
+			brownieViewer.resizeCanvas();
+		};
 
-	// cursor hinting for brownie viewer and slice editor
-	// TODO - these 2 listeners may belong on toolbox
-	// instead of up here at app level
-	sliceEditor.on("mousemove", function(coords){
-		// TODO - gah this line is a travesty
-		brownieViewer.updateCursorPosition(sliceEditor.translateOrigin(coords.concat(sliceEditor.getSlice())));
-	});
-	// hide cursor hint on mouseout
-	sliceEditor.on("mouseout", function(coords){
-		brownieViewer.updateCursorPosition();
-	});
+		// HACK - just getting this working for now
+		sliceEditor.canvas.addEventListener("mousewheel", function(e){
+			var sliceData;
 
-	var toolbox = new Toolbox({
-		editors: [sliceEditor],
-		toolPropertiesEl: $("#toolProperties")
-	});
+			sliceData = brownieModel.getSlice(sliceEditor.getSlice());
+			brownieViewer.showSlice(sliceData);
+		});
+		brownieViewer.canvas.addEventListener("click", function(e){
+			if(brownieViewer.sliced){
+				brownieViewer.unshowSlice();
+			} else {
+				brownieViewer.showSlice(brownieModel.getSlice(sliceEditor.getSlice()));
+			}
+		});
 
-	var brushTool = new BrushTool();
-	var eraserTool = new EraserTool();
+		// cursor hinting for brownie viewer and slice editor
+		// TODO - these 2 listeners may belong on toolbox
+		// instead of up here at app level
+		sliceEditor.on("mousemove", function(coords){
+			// TODO - gah this line is a travesty
+			brownieViewer.updateCursorPosition(sliceEditor.translateOrigin(coords.concat(sliceEditor.getSlice())));
+		});
+		// hide cursor hint on mouseout
+		sliceEditor.on("mouseout", function(coords){
+			brownieViewer.updateCursorPosition();
+		});
 
-	toolbox.addTool("brush", brushTool);
-	toolbox.addTool("eraser", eraserTool);
+		var toolbox = new Toolbox({
+			editors: [sliceEditor],
+			toolPropertiesEl: $("#toolProperties")
+		});
 
-	toolbox.setCurrentTool("brush");
-	$("#toolbox").insertBefore(toolbox.el, $("#toolbox").firstChild);
+		var brushTool = new BrushTool();
+		var eraserTool = new EraserTool();
 
-	// slice selector
-	// TODO - bind to model or something...
-	// $("#sliceSelector").addEventListener("change", function(e){
-	// 	sliceEditor.setSlice(e.target.value);
-	// });
+		toolbox.addTool("brush", brushTool);
+		toolbox.addTool("eraser", eraserTool);
+
+		toolbox.setCurrentTool("brush");
+		$("#toolbox").insertBefore(toolbox.el, $("#toolbox").firstChild);
+
+		// listen for new brownie click
+		$(".newBrownie").addEventListener("click", function(e){ initBrownie(); });
+		$(".saveBrownie").addEventListener("click", saveBrownie);
+		$(".loadBrownie").addEventListener("click", loadBrownie);
+	}
+
+	function initBrownie(brownie){
+		// TODO - get size from user
+		brownieModel = new BrownieModel(24, 24, 24);
+		brownieViewer.updateModel(brownieModel);
+		sliceEditor.updateModel(brownieModel);
+	}
+
+	function saveBrownie(){
+		// TODO - store name, unique id and l,w,h
+		localStorage.brownies = JSON.stringify(brownieViewer.brownies["brownie"].toJSON());
+	}
+
+	function loadBrownie(){
+		var brownieModel,
+			savedBrownieData = JSON.parse(localStorage.brownies),
+			brownie = new Brownie(brownieViewer.renderer);
+
+		brownie.fromJSON(savedBrownieData);
+
+		// TODO - get l, w, h from stored object
+		brownieModel = new BrownieModel(24, 24, 24);
+
+		// read data from brownie object into browniemodel
+		// TODO - savedBrownieData isn't a good place to get
+		// this data from. brownie should expose a method
+		savedBrownieData.forEach(function(px){
+			// TODO - brownie color to hex
+			brownieModel[brownieModel.createKey([px.x, px.y, px.z])] = "#FF0000";
+		});
+
+		brownieViewer.updateModel(brownieModel, brownie);
+		sliceEditor.updateModel(brownieModel);
+	}
+
+	init();
 
 })();
