@@ -1,3 +1,8 @@
+/*
+	action: #4CE806;
+
+ */
+
 * {
 	box-sizing: border-box;
 	margin: 0; padding: 0;
@@ -121,3 +126,92 @@ ul {
 	display: inline-block;
 	margin: 7px 0 7px 5px;
 }
+
+
+
+.modalWrap {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,.5);
+	top: 0;
+	left: 0;
+	display: flex;
+	align-items center;
+}
+.modal {
+	width: 400px;
+	background-color: white;
+	margin: auto;
+	color: #666;
+}
+.modal.fat {
+	width: 800px;
+}
+
+.modal header {
+	font-size: 1.4em;
+	font-weight: bold;
+	padding: 8px;
+	border-bottom: dotted #CCC 1px;
+}
+
+.modal .content {
+	padding: 8px;
+}
+
+.modal .actions {
+	padding: 8px;
+	justify-content: flex-end;
+}
+
+
+
+/* button reset */
+button {
+	background: none;
+	border: none;
+	margin: 0; padding: 0;
+	width: auto;
+	overflow: visible;
+}
+
+
+
+/* REUSABLE CLASSES */
+.link, .btn {
+	color: #555;
+	padding: 8px 16px;
+	cursor: pointer;
+	margin: 4px;
+	font-weight: bold;
+}
+
+.link:hover {
+	text-decoration: underline;
+	color: #226803;
+}
+
+.btn {
+	background-color: #BBB;
+	color: #555;
+}
+.btn:hover {
+	background-color: #DDD;
+}
+.btn.primary {
+	background-color: #4CE806;
+	color: #386822;
+}
+.btn.primary:hover {
+	background-color: #7EEC4D;
+}
+.btn.passive {
+	background-color: transparent;
+	color: #555;
+	padding: 8px;
+}
+.btn.passive:hover {
+	color: #333;
+}
+

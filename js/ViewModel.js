@@ -15,13 +15,14 @@
 		// TODO - configurable tag
 		this.el = document.createElement("div");
 
-		this.el.innerHTML = this.template || "";
-
 		// TODO - iterate el's children and look
 		// for data-bind-* properties and bind
 		// listeners to them, and interpolate model
-		// values
-		// 
+		// values instead of string interpolation
+		this.template = Handlebars.compile(this.template);
+
+		this.el.innerHTML = this.template(this);
+		
 		this.bindEvents();
 
 		if(this.init) this.init.call(this);
@@ -41,13 +42,7 @@
 				func = this[eventMap[i]].bind(this);
 
 				if (typeof func === "function") {
-					// TODO - event handlers that can be removed
-					this.el.addEventListener(eventAction, function(e){
-						// TODO - cross browser `matches` method
-						if(e.target.webkitMatchesSelector(selector)){
-							func(e);
-						}
-					});
+					bindEvent(this.el, eventAction, selector, func);
 				}
 			}
 		},
@@ -55,6 +50,16 @@
 		setModel: function(model){
 			this.model = model;
 		}
+	}
+
+	function bindEvent(el, eventAction, selector, func){
+		// TODO - event handlers that can be removed
+		el.addEventListener(eventAction, function(e){
+			// TODO - cross browser `matches` method
+			if(e.target.webkitMatchesSelector(selector)){
+				func(e);
+			}
+		});
 	}
 
 	window.ViewModel = ViewModel;
