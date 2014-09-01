@@ -12,6 +12,16 @@
 			this[prop] = config[prop];
 		}
 
+		// default model object
+		this.model = this.model || {};
+
+		// watch model for changes
+		// TODO - use smart data-binding instead
+		// of string interpolation for view updates
+		Object.observe(this.model, function(){
+			this.render();
+		}.bind(this));
+
 		// TODO - configurable tag
 		this.el = document.createElement("div");
 
@@ -21,11 +31,12 @@
 		// values instead of string interpolation
 		this.template = compile(this.template);
 
-		this.el.innerHTML = this.template(this);
-		
-		this.bindEvents();
-
+		// TODO - should this happen before or after
+		// render and bindEvents?
 		if(this.init) this.init.call(this);
+
+		this.render();
+		this.bindEvents();
 	}
 
 	ViewModel.prototype = {
@@ -45,6 +56,10 @@
 					bindEvent(this.el, eventAction, selector, func, this);
 				}
 			}
+		},
+
+		render: function(){
+			this.el.innerHTML = this.template(this);	
 		},
 
 		setModel: function(model){
