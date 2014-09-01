@@ -19,7 +19,7 @@
 		// for data-bind-* properties and bind
 		// listeners to them, and interpolate model
 		// values instead of string interpolation
-		this.template = Handlebars.compile(this.template);
+		this.template = compile(this.template);
 
 		this.el.innerHTML = this.template(this);
 		
@@ -60,6 +60,81 @@
 				func(e);
 			}
 		});
+	}
+
+	// template interpolator taggy tags
+	var OPEN_TAG = /{{/,
+		CLOSE_TAG = /}}/,
+		TAGS_LENGTH = 2;
+
+	// identifies interpolation points and returns
+	// a function that quickly inserts values into
+	// those points		
+	function compile(template){
+		var modifiedTemplate = template,
+			currOpen, currClose,
+			points = [];
+
+		while((currOpen = modifiedTemplate.search(OPEN_TAG)) !== -1){
+
+			// oh hey we found an open tag. let's find close
+			if((currClose = modifiedTemplate.search(CLOSE_TAG)) !== -1){
+
+				// store the interpolation point
+				points.push({
+					index: currOpen,
+					val: modifiedTemplate.slice(currOpen + TAGS_LENGTH, currClose)
+				});
+
+				// slice out the interpolation point
+				modifiedTemplate = modifiedTemplate.substr(0, currOpen) + modifiedTemplate.substr(currClose + TAGS_LENGTH, modifiedTemplate.length);
+
+			// uhh... there's open but no close tag. what
+			// the heck brah.
+			} else {
+				// TODO - more details about error
+				throw new Error("Invalid template, idiot.");
+			}	
+
+			currOpen = -1;
+			currClose = -1;
+
+		}
+
+		// reverse points array so that insertion
+		// happens in reverse order. this prevents the
+		// modifications to the string from offsetting
+		// the point values
+		points = points.reverse();
+
+		return function(model){
+			var interpolatedTemplate = modifiedTemplate;
+			points.forEach(function(point){
+				interpolatedTemplate = interpolatedTemplate.substr(0, point.index) +
+					getValue(model, point.val) +
+					interpolatedTemplate.substr(point.index, interpolatedTemplate.length);
+			});
+			return interpolatedTemplate;
+		};
+
+	}
+
+	// gets `val` from `obj`. can traverse object with `.`
+	// TODO - handle []?
+	// TODO - handle functions? filters?
+	function getValue(obj, val){
+		var valArr = val.split("."),
+			currVal = obj;
+
+		valArr.forEach(function(v){
+			try {
+				currVal = currVal[v];
+			} catch(e){
+				throw new Error("Value '"+ v +"' don't exist, brah!");
+			}
+		});	
+
+		return currVal;
 	}
 
 	window.ViewModel = ViewModel;

@@ -4,7 +4,7 @@
 	var MODAL_TEMPLATE = '\
 		<div class="modal">\
 			<header>{{modalConfig.title}}</header>\
-			<div class="content">{{{modalConfig.content}}}</div>';
+			<div class="content">{{modalConfig.content}}</div>';
 		// 	<ul class="actions hbox">\
 		// 		<li><button class="btn passive">No, you listen. Idiot</button></li>\
 		// 		<li><button class="btn primary">Okay.</button></li>\
@@ -16,19 +16,18 @@
 	 */
 	function Modal(config){
 
-		// put modal configuration options in a place
-		// that the modal template knows to look
-		this.modalConfig = {
-			title: config.title,
-			content: Handlebars.compile(config.content || "")(config.model || {})
-		}
+		// use the modal template
+		config.template = MODAL_TEMPLATE;
+
+		// go ahead and interpolate the modal values
+		// HACK - this is sucky
+		config.template = config.template.replace("{{modalConfig.title}}", config.title);
+		config.template = config.template.replace("{{modalConfig.content}}", config.content);
+
 		// these shouldnt be extended on the object
 		// when super is called, so remove them
 		delete config.title;
 		delete config.content;
-
-		// use the modal template
-		config.template = MODAL_TEMPLATE;
 
 		// if actions were provded, add action
 		// bar to end of modal

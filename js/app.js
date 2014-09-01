@@ -83,7 +83,7 @@
 
 		new Modal({
 			title: "Here's your order sir.",
-			content: "<textarea style='width:100%; height: 200px; padding: 4px;'>{{brownieData}}</textarea>",
+			content: "<textarea style='width:100%; height: 200px; padding: 4px;'>{{model.brownieData}}</textarea>",
 			model: {brownieData: brownieData},
 			actions: [
 				{ label: "Oah Neato!", class: "primary close" }
