@@ -39,10 +39,10 @@
 				selector = i.split(" ");
 				eventAction = selector.shift();
 				selector = selector.join(" ");
-				func = this[eventMap[i]].bind(this);
+				func = this[eventMap[i]] || eventMap[i];
 
 				if (typeof func === "function") {
-					bindEvent(this.el, eventAction, selector, func);
+					bindEvent(this.el, eventAction, selector, func, this);
 				}
 			}
 		},
@@ -52,12 +52,12 @@
 		}
 	}
 
-	function bindEvent(el, eventAction, selector, func){
+	function bindEvent(el, eventAction, selector, func, context){
 		// TODO - event handlers that can be removed
 		el.addEventListener(eventAction, function(e){
 			// TODO - cross browser `matches` method
 			if(e.target.webkitMatchesSelector(selector)){
-				func(e);
+				func.call(context, e);
 			}
 		});
 	}

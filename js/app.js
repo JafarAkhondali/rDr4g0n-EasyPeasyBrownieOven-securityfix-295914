@@ -104,14 +104,13 @@
 			],
 			eventMap: {
 				"click .close": "close",
-				"click .import": "import"
-			},
-			import: function(e){
-				var brownieData = this.modal.querySelector("textarea").value;
+				"click .import": function(e){
+					var brownieData = this.modal.querySelector("textarea").value;
 
-				// TODO - try/catch this junk
-				console.log(brownieData);
-				this.close();
+					// TODO - try/catch this junk
+					console.log(brownieData);
+					this.close();
+				}
 			}
 		}).open();
 	});
