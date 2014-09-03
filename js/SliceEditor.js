@@ -219,11 +219,16 @@
 			// this.render();
 		},
 		incrementSlice: function(){
-			// TODO - clamp
-			this._slice++;
+			if(this._slice < this.model.depth * 0.5){
+				this._slice++;
+				console.log(this._slice);
+			}
 		},
 		decrementSlice: function(){
-			this._slice--;
+			if(this._slice > -this.model.depth * 0.5){
+				this._slice--;
+				console.log(this._slice);
+			}
 		},
 	}
 
