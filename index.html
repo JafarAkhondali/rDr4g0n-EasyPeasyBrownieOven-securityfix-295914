@@ -9,7 +9,7 @@
 <body class="vbox">
 	<div class="hbox" style="width: 100%; height: 43px; background-color: #222; border-bottom: solid #666 1px;">
 		<ul id="fileMenu" class="fileMenu hbox">
-			<li><i class="flaticon-new8"></i></li>
+			<li><i class="newBrownieIcon flaticon-new8"></i></li>
 			<li><i class="flaticon-floppy1"></i></li>
 			<li><i class="importIcon flaticon-login12"></i></li>
 			<li><i class="exportIcon flaticon-extract"></i></li>
@@ -57,6 +57,31 @@
 		<div id="currentColor" class="currentColor" style="background-color: {{model.currColor}};"></div>
 
 		<div id="colorPalette" class="colorPalette hbox">{{model.colorPaletteHTML}}</div>	
+	</script>
+
+	<script type="text/template" id="newBrownieTemplate">
+
+		<div class="formSectionLabel">Name Your Brownie</div>
+		<input type="text">
+
+		<br>
+
+		<div class="formSectionLabel">Configure Your Brownie</div>
+		<div class="hbox">
+			<div style="margin-right: 16px; flex-grow: 1;">
+				<label>Width</label>
+				<input class='width' type='number' min='1' max='50' value='24'>
+			</div>
+			<div style="margin-right: 16px; flex-grow: 1;">
+				<label>Height</label>
+				<input class='height' type='number' min='1' max='50' value='24'>
+			</div>
+			<div style="flex-grow: 1;">
+				<label>Depth</label>
+				<input class='depth' type='number' min='1' max='50' value='24'>
+			</div>
+		</div>
+
 	</script>
 
 	<script src="lib/three.js"></script>

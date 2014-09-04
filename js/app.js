@@ -114,6 +114,27 @@
 			}
 		}).open();
 	});
+	
+	$(".newBrownieIcon").addEventListener("click", function(){
+		new Modal({
+			title: "Bake Up a New Brownie!",
+			content: $("#newBrownieTemplate").innerHTML,
+			actions: [
+				{ label: "Nevermind", class: "passive close" },
+				{ label: "Create", class: "primary create" }
+			],
+			eventMap: {
+				"click .close": "close",
+				"click .create": function(e){
+					// TODO - either create new slice editors and
+					// brownie viewer, or restore them to default
+					// state
+					alert("oh hey new brownie, yay!");
+					this.close();
+				}
+			}
+		}).open();
+	});
 
 
 
