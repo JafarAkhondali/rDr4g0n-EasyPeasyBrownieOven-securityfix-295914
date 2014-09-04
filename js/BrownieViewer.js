@@ -40,6 +40,12 @@
 				vertexColors: THREE.VertexColors,
 				specular: 0
 			}),
+			brownieFlat: new THREE.MeshBasicMaterial({
+				color: 0xFFFFFF,
+				vertexColors: THREE.VertexColors,
+				specular: 0,
+				shading: THREE.FlatShading
+			}),
 			cursor: new THREE.MeshBasicMaterial({
 				wireframe: true,
 				wireframeLinewidth: 3,
@@ -78,7 +84,7 @@
 			// remove previous brownie mesh before updating
 			this.scene.remove(this.meshes["brownie"]);
 
-			this.meshes["brownie"] = new THREE.Mesh(geo, this.materials["brownie"]);
+			this.meshes["brownie"] = new THREE.Mesh(geo, this.materials["brownieFlat"]);
 
 			// add cursor hint
 			this.meshes["brownie"].add(this.meshes["cursor"]);
@@ -121,7 +127,7 @@
 
 			this.meshes["slice"] = new THREE.Mesh(
 				sliceBrownie.getGeometry(),
-				this.materials["brownie"]
+				this.materials["brownieFlat"]
 			);
 
 			// add new slice mesh
@@ -143,7 +149,7 @@
 		// restore brownie to original material
 		// and remove slice
 		unshowSlice: function(){
-			this.meshes["brownie"].material = this.materials["brownie"];
+			this.meshes["brownie"].material = this.materials["brownieFlat"];
 			// remove previous slice
 			this.meshes["brownie"].remove(this.meshes["slice"]);
 			// remove slice brownie
@@ -199,18 +205,38 @@
 
 		// cleans up old state and loads a new brownie
 		loadBrownie: function(model){
-			var changeset = [];
+			var brownieData = [],
+				currCoords,
+				currColor;
 
 			this.initModel(model);
 			this.newBrownie();
 
-			// NOTE: the model should not have any data
-			// loaded at this point. data should be added
-			// AFTER loadBrownie is called so that the 
-			// additions are propogated through the code
+			// if the model has any data, format it for brownie
+			if(Object.keys(model.model).length){
+				for(var i in model.model){
+					currCoords = model.parseKey(i);
+					currColor = model.hexColorToBrownieColor(model.model[i]);
+
+					brownieData.push({
+						x: currCoords[0],
+						y: currCoords[1],
+						z: currCoords[2],
+						r: currColor[0],
+						g: currColor[1],
+						b: currColor[2]
+					});
+				}
+			}
+
+			// batch update brownie with the brownieData
+			this.brownies["brownie"].fromJSON(brownieData);
 
 			// update camera position with new height/depth
 			this.camera.position.set(0, -this.model.height, this.model.depth);
+
+			this.renderBrownie();
+			this.renderScene();
 		}
 	}
 

@@ -10,9 +10,6 @@
 		// mixin event emitting superpowers
 		eventEmitter.call(this);
 
-		// TODO - this.model.model is kinda icky to type
-		this.model = {};
-
 		this.name = name;
 		
 		// currently these values are modely just hints
@@ -20,12 +17,26 @@
 		this.height = height;
 		this.depth = depth;
 
-		// begin observing the model for changes
-		Object.observe(this.model, this.onChange.bind(this));
+		this.onChange = this.onChange.bind(this);
+
+		this.initModel({});
 	}
 
 	BrownieModel.prototype = {
 		constuctor: BrownieModel,
+
+		initModel: function(model){
+
+			if(this.model){
+				Object.unobserve(this.model, this.onChange);
+			}
+
+			// TODO - this.model.model is kinda icky to type
+			this.model = model;
+
+			// begin observing the model for changes
+			Object.observe(this.model, this.onChange);
+		},
 
 		// TODO - make onChange function for add, delete and edit
 		onChange: function(changes){
@@ -45,7 +56,7 @@
 
 				// otherwise, set pixel with color
 				} else {
-					brownieChangeset.push(this.parseKey(change.name).concat(hexColorToBrownieColor(change.object[change.name])));
+					brownieChangeset.push(this.parseKey(change.name).concat(this.hexColorToBrownieColor(change.object[change.name])));
 				}
 			}.bind(this));
 
@@ -67,7 +78,7 @@
 				// if this px is on the specified slice
 				if(coordsArr[sliceAxis] === slice){
 					// TODO - return hex color instead of brownie color?
-					sliceData.push(coordsArr.concat(hexColorToBrownieColor(this.model[coords])));
+					sliceData.push(coordsArr.concat(this.hexColorToBrownieColor(this.model[coords])));
 				}
 			}
 			return sliceData;
@@ -80,21 +91,34 @@
 		// creates model key from [x,y,z] coords
 		createKey: function(coords){
 			return coords.join(",");
+		},
+
+		// takes hex color like "#FF0000" and normalizes to
+		// 3 zero to one values. eg FF0000 becomes 1, 0, 0
+		hexColorToBrownieColor: function(hex){
+			var normalized = [];
+
+			hex = hex.replace("#", "");
+			for(var i = 0; i < 6; i+=2){
+				normalized.push(parseInt(hex.substr(i, 2), 16) / 255);
+			}
+
+			return normalized;
+		},
+
+		export: function(){
+			return {
+				name: this.name,
+				width: this.width,
+				height: this.height,
+				depth: this.depth,
+				data: this.model
+			}
+		},
+		import: function(data){
+			this.initModel(data);
 		}
 	};
-
-	// takes hex color like "#FF0000" and normalizes to
-	// 3 zero to one values. eg FF0000 becomes 1, 0, 0
-	function hexColorToBrownieColor(hex){
-		var normalized = [];
-
-		hex = hex.replace("#", "");
-		for(var i = 0; i < 6; i+=2){
-			normalized.push(parseInt(hex.substr(i, 2), 16) / 255);
-		}
-
-		return normalized;
-	}
 
 	window.BrownieModel = BrownieModel;
 	

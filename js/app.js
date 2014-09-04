@@ -77,7 +77,8 @@
 	}
 	
 	$(".exportIcon").addEventListener("click", function(){
-		var brownieData = JSON.stringify(brownieViewer.brownies["brownie"].toJSON());
+		// TODO - dont rely explicitly on brownieViewer to get model?
+		var brownieData = JSON.stringify(brownieViewer.model.export());
 
 		new Modal({
 			title: "Here's your order sir.",
@@ -103,35 +104,19 @@
 			eventMap: {
 				"click .close": "close",
 				"click .import": function(e){
-					var	brownie = new Brownie(brownieViewer.renderer),
-						brownieData = this.modal.querySelector("textarea").value,
-						brownieModel,
-						bounds,
-						currVal;
+					var	brownieData,
+						brownieDataStr = this.modal.querySelector("textarea").value,
+						brownieModel;
 
 					// TODO - try/catch json parse and fromJSON
-					brownie.fromJSON(JSON.parse(brownieData));
-
-					bounds = brownie.getBounds();
-
-					// TODO - handle uneven bounds :/
-					// TODO - store name on exported brownie and use it here
+					brownieData = JSON.parse(brownieDataStr);
 					
-					brownieModel = new BrownieModel("loaded", bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y, bounds.max.z - bounds.min.z);
+					// TODO - ensure all fields are present/valid
+					brownieModel = new BrownieModel(brownieData.name, brownieData.width, brownieData.height, brownieData.depth);
+
+					brownieModel.import(brownieData.data);
 
 					loadBrownie(brownieModel);
-
-					// iterate brownie and update brownieModel with
-					// the data loaded into brownie
-					for(var x = bounds.min.x; x < bounds.max.x; x++){
-						for(var y = bounds.min.y; x < bounds.max.y; y++){
-							for(var z = bounds.min.z; z < bounds.max.z; z++){
-								if(currVal = brownie.get(x, y, z)){
-									brownieModel.model[brownieModel.createKey(x,y,z)] = currVal;
-								}
-							}
-						}
-					}
 
 					this.close();
 				}
