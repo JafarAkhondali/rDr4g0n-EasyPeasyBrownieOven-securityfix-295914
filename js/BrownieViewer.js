@@ -204,10 +204,10 @@
 			this.initModel(model);
 			this.newBrownie();
 
-			// TODO - iterate model and create a brownie
-			// changeset
-
-			this.updateBrownie(changeset);
+			// NOTE: the model should not have any data
+			// loaded at this point. data should be added
+			// AFTER loadBrownie is called so that the 
+			// additions are propogated through the code
 
 			// update camera position with new height/depth
 			this.camera.position.set(0, -this.model.height, this.model.depth);

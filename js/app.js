@@ -103,10 +103,36 @@
 			eventMap: {
 				"click .close": "close",
 				"click .import": function(e){
-					var brownieData = this.modal.querySelector("textarea").value;
+					var	brownie = new Brownie(brownieViewer.renderer),
+						brownieData = this.modal.querySelector("textarea").value,
+						brownieModel,
+						bounds,
+						currVal;
 
-					// TODO - try/catch this junk
-					console.log(brownieData);
+					// TODO - try/catch json parse and fromJSON
+					brownie.fromJSON(JSON.parse(brownieData));
+
+					bounds = brownie.getBounds();
+
+					// TODO - handle uneven bounds :/
+					// TODO - store name on exported brownie and use it here
+					
+					brownieModel = new BrownieModel("loaded", bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y, bounds.max.z - bounds.min.z);
+
+					loadBrownie(brownieModel);
+
+					// iterate brownie and update brownieModel with
+					// the data loaded into brownie
+					for(var x = bounds.min.x; x < bounds.max.x; x++){
+						for(var y = bounds.min.y; x < bounds.max.y; y++){
+							for(var z = bounds.min.z; z < bounds.max.z; z++){
+								if(currVal = brownie.get(x, y, z)){
+									brownieModel.model[brownieModel.createKey(x,y,z)] = currVal;
+								}
+							}
+						}
+					}
+
 					this.close();
 				}
 			}
@@ -125,10 +151,10 @@
 				"click .close": "close",
 				"click .create": function(e){
 					// TODO - validate!
-					var name = this.el.querySelector(".name").value,
-						width = this.el.querySelector(".width").value,
-						height = this.el.querySelector(".height").value,
-						depth = this.el.querySelector(".depth").value;
+					var name = this.modal.querySelector(".name").value,
+						width = this.modal.querySelector(".width").value,
+						height = this.modal.querySelector(".height").value,
+						depth = this.modal.querySelector(".depth").value;
 
 					newBrownie(name, width, height, depth);
 					this.close();
