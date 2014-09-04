@@ -9,8 +9,7 @@
 	function BrownieViewer(config){
 		config = config || {};
 
-		this.model = config.model;
-		this.model.on("changeset", this.updateBrownie, this);
+		this.initModel(config.model);
 
 		// TODO - ensure el exists
 		this.el = config.el;
@@ -24,7 +23,6 @@
 		this.resizeCanvas();
 		this.el.appendChild(this.canvas);
 
-		// TODO - use model dimensions to position camera better
 		this.camera = new THREE.PerspectiveCamera(65, this.canvas.width / this.canvas.height, 1, 1000);
 		this.camera.position.set(0, -this.model.height, this.model.depth);
 
@@ -63,7 +61,7 @@
 		);
 
 		// base brownie
-		this.newBrownie(this.brownieSize);
+		this.newBrownie();
 
 		// auto-rotate meshes
 		this.autoRotateMesh = this.autoRotateMesh.bind(this);
@@ -77,7 +75,9 @@
 			this.brownies["brownie"] = new Brownie(this.renderer);
 			var geo = this.brownies["brownie"].getGeometry();
 			
-			// TODO - remove previous brownie's mesh from scene
+			// remove previous brownie mesh before updating
+			this.scene.remove(this.meshes["brownie"]);
+
 			this.meshes["brownie"] = new THREE.Mesh(geo, this.materials["brownie"]);
 
 			// add cursor hint
@@ -147,7 +147,7 @@
 			// remove previous slice
 			this.meshes["brownie"].remove(this.meshes["slice"]);
 			// remove slice brownie
-			this.brownies["slice"] = null;
+			delete this.brownies["slice"];
 
 			// to determine if this thing is
 			// sliced or not
@@ -189,6 +189,28 @@
 			this.canvas.width = Math.min(this.el.clientHeight, this.el.clientWidth);
 			this.canvas.height = Math.min(this.el.clientHeight, this.el.clientWidth);
 			this.renderer.setSize(Math.min(this.el.clientHeight, this.el.clientWidth), Math.min(this.el.clientHeight, this.el.clientWidth));
+		},
+
+		// sets model and makes any model related configs
+		initModel: function(model){
+			this.model = model;
+			this.model.on("changeset", this.updateBrownie, this);
+		},
+
+		// cleans up old state and loads a new brownie
+		loadBrownie: function(model){
+			var changeset = [];
+
+			this.initModel(model);
+			this.newBrownie();
+
+			// TODO - iterate model and create a brownie
+			// changeset
+
+			this.updateBrownie(changeset);
+
+			// update camera position with new height/depth
+			this.camera.position.set(0, -this.model.height, this.model.depth);
 		}
 	}
 

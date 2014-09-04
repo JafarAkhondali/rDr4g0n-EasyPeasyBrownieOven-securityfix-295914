@@ -11,6 +11,8 @@
 		this.toolsEl.classList.add("hbox");
 		this.el.appendChild(this.toolsEl);
 
+		this.brownieViewer = config.brownieViewer;
+
 		this.toolPropertiesEl = config.toolPropertiesEl;
 
 		this.onToolClick = this.onToolClick.bind(this);
@@ -28,6 +30,15 @@
 				}.bind(this));
 				editor.on("drag", function(coords){
 					this.editorDrag(editor, coords);
+				}.bind(this));
+				editor.on("mousewheel", function(wheelDelta){
+					this.editorMouseWheel(editor, wheelDelta);
+				}.bind(this));
+				editor.on("mousemove", function(coords){
+					this.editorMouseMove(editor, coords);
+				}.bind(this));
+				editor.on("mouseout", function(){
+					this.editorMouseOut(editor);
 				}.bind(this));
 			}.bind(this));
 		}
@@ -88,6 +99,22 @@
 		editorDrag: function(editor, coords){
 			// TODO - ensure a tool is selected
 			this.currentTool.tool.onEditorDrag(editor, coords);
+		},
+		editorMouseWheel: function(editor, wheelDelta){
+			var sliceData;
+
+			sliceData = editor.model.getSlice(editor.getSlice());
+			this.brownieViewer.showSlice(sliceData);
+		},
+		editorMouseMove: function(editor, coords){
+			var cursorPos;
+
+			// update 3D cursor position
+			cursorPos = editor.translateOrigin(coords.concat(editor.getSlice()));
+			this.brownieViewer.updateCursorPosition(cursorPos);
+		},
+		editorMouseOut: function(editor){
+			this.brownieViewer.updateCursorPosition();
 		},
 
 		// delegate to tool that was clicked

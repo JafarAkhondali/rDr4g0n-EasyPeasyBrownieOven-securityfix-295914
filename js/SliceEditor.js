@@ -13,14 +13,7 @@
 		// mixin event emitting superpowers
 		eventEmitter.call(this);
 
-		this.model = config.model;
-		// this.model.on("change", this.render, this);
-
-		// determine brownie width
-		this.brownieWidth = this.model.width;
-
-		// determine brownie height
-		this.brownieHeight = this.model.height;
+		this.initModel(config.model);
 
 		// TODO - ensure el exists
 		this.el = config.el;
@@ -160,6 +153,8 @@
 			} else {
 				this.decrementSlice();
 			}
+
+			this.emit("mousewheel", e.wheelDelta);
 			// this.render();
 		},
 
@@ -221,15 +216,33 @@
 		incrementSlice: function(){
 			if(this._slice < this.model.depth * 0.5){
 				this._slice++;
-				console.log(this._slice);
 			}
 		},
 		decrementSlice: function(){
 			if(this._slice > -this.model.depth * 0.5){
 				this._slice--;
-				console.log(this._slice);
 			}
 		},
+
+		// sets model and makes any model related configs
+		initModel: function(model){
+
+			this.model = model;
+			// this.model.on("change", this.render, this);
+
+			// determine brownie width
+			this.brownieWidth = this.model.width;
+
+			// determine brownie height
+			this.brownieHeight = this.model.height;
+		},
+
+		// cleans up old state and loads a new brownie
+		loadBrownie: function(model){
+			this.initModel(model);
+			this._slice = 0;
+			this.resizeCanvas();
+		}
 	}
 
 	// http://stackoverflow.com/a/17108084/957341

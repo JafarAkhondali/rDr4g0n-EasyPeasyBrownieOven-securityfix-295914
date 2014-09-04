@@ -5,13 +5,15 @@
 	 * A model that emits events when it changes, allowing
 	 * many different objects to observe it
 	 */
-	function BrownieModel(width, height, depth){
+	function BrownieModel(name, width, height, depth){
 
 		// mixin event emitting superpowers
 		eventEmitter.call(this);
 
 		// TODO - this.model.model is kinda icky to type
 		this.model = {};
+
+		this.name = name;
 		
 		// currently these values are modely just hints
 		this.width = width;
