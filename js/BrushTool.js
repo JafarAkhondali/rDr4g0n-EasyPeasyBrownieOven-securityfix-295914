@@ -5,7 +5,7 @@
 	 * Toolbox tool for painting on SliceEditor.js
 	 */
 	function BrushTool(config){
-		this.icon = "flaticon-pencil5";
+		this.icon = "flaticon-small23";
 
 		// TODO - expose various config options in UI
 		this.size = 1;

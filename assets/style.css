@@ -103,6 +103,7 @@ ul {
 }
 .tool.selected {
 	color: #4CE806;
+	background-color: #333;
 }
 .tool.selecter:hover {
 	color: inherit;
@@ -113,6 +114,8 @@ ul {
 	background-color: #333;
 	width: 200px;
 	flex-shrink: 0;
+	padding: 8px;
+	border-top: solid 4px #4CE806;
 }
 
 .toolProperties label {
@@ -175,6 +178,14 @@ ul {
 }
 
 .modal .content input {
+	display: block;
+	width: 100%;
+	padding: 4px;
+	margin: 0 0 16px 0;
+	font-size: 1.1em;
+}
+
+.modal .content textarea {
 	display: block;
 	width: 100%;
 	padding: 4px;

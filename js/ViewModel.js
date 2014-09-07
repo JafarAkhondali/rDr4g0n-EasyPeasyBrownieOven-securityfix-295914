@@ -29,7 +29,7 @@
 		// for data-bind-* properties and bind
 		// listeners to them, and interpolate model
 		// values instead of string interpolation
-		this.template = compile(this.template);
+		this.template = compile(this.template, this);
 
 		// TODO - should this happen before or after
 		// render and bindEvents?
@@ -85,7 +85,7 @@
 	// identifies interpolation points and returns
 	// a function that quickly inserts values into
 	// those points		
-	function compile(template){
+	function compile(template, context){
 		var modifiedTemplate = template,
 			currOpen, currClose,
 			points = [];
@@ -126,7 +126,7 @@
 			var interpolatedTemplate = modifiedTemplate;
 			points.forEach(function(point){
 				interpolatedTemplate = interpolatedTemplate.substr(0, point.index) +
-					getValue(model, point.val) +
+					getValue(model, point.val, context) +
 					interpolatedTemplate.substr(point.index, interpolatedTemplate.length);
 			});
 			return interpolatedTemplate;
@@ -136,8 +136,8 @@
 
 	// gets `val` from `obj`. can traverse object with `.`
 	// TODO - handle []?
-	// TODO - handle functions? filters?
-	function getValue(obj, val){
+	// TODO - handle filters?
+	function getValue(obj, val, context){
 		var valArr = val.split("."),
 			currVal = obj;
 
@@ -147,9 +147,18 @@
 			} catch(e){
 				throw new Error("Value '"+ v +"' don't exist, brah!");
 			}
-		});	
+		});
 
-		return currVal;
+		// if the value is a function, return the
+		// result of calling the function
+		// TODO - bind function context? pass args? etc
+		if(typeof currVal === "function"){
+			return currVal.call(context);
+
+		// otherwise, return the value
+		} else {
+			return currVal;
+		}
 	}
 
 	window.ViewModel = ViewModel;

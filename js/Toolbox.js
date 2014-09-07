@@ -8,7 +8,7 @@
 	function Toolbox(config){
 		this.el = document.createElement("div");
 		this.toolsEl = document.createElement("ul");
-		this.toolsEl.classList.add("hbox");
+		this.toolsEl.classList.add("vbox");
 		this.el.appendChild(this.toolsEl);
 
 		this.brownieViewer = config.brownieViewer;

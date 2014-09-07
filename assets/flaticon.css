@@ -12,24 +12,18 @@
 [class^="flaticon-"]:after, [class*=" flaticon-"]:after {   
 	font-family: Flaticon;
 	font-style: normal;
-}.flaticon-eraser8:before {
+}.flaticon-add26:before {
 	content: "\e000";
 }
-.flaticon-extract:before {
+.flaticon-eraser8:before {
 	content: "\e001";
 }
-.flaticon-floppy1:before {
+.flaticon-folder63:before {
 	content: "\e002";
 }
-.flaticon-login12:before {
+.flaticon-small23:before {
 	content: "\e003";
 }
-.flaticon-new8:before {
+.flaticon-tools3:before {
 	content: "\e004";
-}
-.flaticon-open131:before {
-	content: "\e005";
-}
-.flaticon-pencil5:before {
-	content: "\e006";
 }

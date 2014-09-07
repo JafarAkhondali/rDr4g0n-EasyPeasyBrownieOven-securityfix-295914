@@ -6,27 +6,26 @@
 	<link rel="stylesheet" href="assets/flaticon.css">
 	<link rel="stylesheet" href="assets/style.css">
 </head>
-<body class="vbox">
-	<div class="hbox" style="width: 100%; height: 43px; background-color: #222; border-bottom: solid #666 1px;">
-		<ul id="fileMenu" class="fileMenu hbox">
-			<li><i class="newBrownieIcon flaticon-new8"></i></li>
-			<li><i class="flaticon-floppy1"></i></li>
-			<li><i class="importIcon flaticon-login12"></i></li>
-			<li><i class="exportIcon flaticon-extract"></i></li>
+<body class="hbox">
+	<div class="vbox" style="height: 100%; width: 43px; background-color: #222; border-top: solid 4px #C241EB;">
+		<ul id="fileMenu" class="fileMenu vbox">
+			<li><i class="newBrownieIcon flaticon-add26"></i></li>
+			<li><i class="openBrownieIcon flaticon-folder63"></i></li>
+			<li><i class="configureBrownieIcon flaticon-tools3"></i></li>
 		</ul>
 
-		<div class="vr"></div>
+		<div class="hr"></div>
 
-		<div id="toolbox" class="toolbox hbox">
+		<div id="toolbox" class="toolbox vbox">
 			<!-- tools are inserted here -->
 		</div>
 	</div>
 
-	<div class="hbox" style="height: calc(100% - 43px);">
+	<div class="hbox" style="width: calc(100% - 43px);">
 
 		<div id="toolProperties" class="toolProperties"></div>
 
-		<div class="hbox" style="width: 100%; align-items: stretch;">
+		<div class="hbox" style="width: calc(100% - 200px); align-items: stretch; border-top: solid white 4px;">
 			<div id="sliceEditor" class="sliceEditor" style="width: 50%; margin: 10px;"></div>
 			<div id="brownieViewer" class="brownieViewer" style="width: 50%; margin: 10px;"></div>
 		</div>
@@ -70,18 +69,53 @@
 		<div class="hbox">
 			<div style="margin-right: 16px; flex-grow: 1;">
 				<label>Width</label>
-				<input class='width' type='number' min='1' max='50' value='24'>
+				<input class='width size' type='number' min='1' max='50' value='24'>
 			</div>
 			<div style="margin-right: 16px; flex-grow: 1;">
 				<label>Height</label>
-				<input class='height' type='number' min='1' max='50' value='24'>
+				<input class='height size' type='number' min='1' max='50' value='24'>
 			</div>
 			<div style="flex-grow: 1;">
 				<label>Depth</label>
-				<input class='depth' type='number' min='1' max='50' value='24'>
+				<input class='depth size' type='number' min='1' max='50' value='24'>
 			</div>
 		</div>
 
+	</script>
+
+	<script type="text/template" id="loadBrownieTemplate">
+		<style>
+			.brownieList li {
+				height: 22px;
+				padding: 8px;
+				cursor: pointer;
+				border-bottom: dotted 1px #CCC;
+			}
+			.brownieList li:hover {
+				background-color: #CCC;
+			}
+			.brownieList li.selected {
+				background-color: #4CE806;
+			}
+		</style>
+
+		<div class="formSectionLabel">Load a Brownie</div>
+		<ul class="brownieList">{{getLocalBrownies}}</ul>
+
+		<br>
+
+		<div class="formSectionLabel">Import a Brownie</div>
+		<textarea class="import" placeholder="Paste that baby right here"></textarea>
+	</script>
+
+	<script type="text/template" id="configureBrownieTemplate">
+		<div class="formSectionLabel">Rename Your Brownie</div>
+		<input class="name" type="text" value="{{getBrownieName}}">
+
+		<br>
+
+		<div class="formSectionLabel">Brownie Export Data</div>
+		<textarea disabled>{{getBrownieData}}</textarea>
 	</script>
 
 	<script src="lib/three.js"></script>

@@ -5,13 +5,19 @@
 	 * A model that emits events when it changes, allowing
 	 * many different objects to observe it
 	 */
-	function BrownieModel(name, width, height, depth){
+	function BrownieModel(config){
+
+		var id = config.id,
+			name = config.name,
+			height = config.height,
+			width = config.width,
+			depth = config.depth;
 
 		// mixin event emitting superpowers
 		eventEmitter.call(this);
 
 		// TODO - more legit id
-		this.id = new Date().getTime();
+		this.id = id || new Date().getTime();
 
 		this.name = name;
 		
@@ -114,6 +120,7 @@
 
 		export: function(){
 			return {
+				id: this.id,
 				name: this.name,
 				width: this.width,
 				height: this.height,
