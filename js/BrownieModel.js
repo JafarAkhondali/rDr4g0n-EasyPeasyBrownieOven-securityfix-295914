@@ -10,6 +10,9 @@
 		// mixin event emitting superpowers
 		eventEmitter.call(this);
 
+		// TODO - more legit id
+		this.id = new Date().getTime();
+
 		this.name = name;
 		
 		// currently these values are modely just hints
@@ -62,6 +65,9 @@
 
 			// changeset event with a set of changes made
 			this.emit("changeset", brownieChangeset);
+
+			// TODO - save only every n seconds
+			this.saveToLS();
 		},
 
 		// returns all points for a slice
@@ -117,6 +123,17 @@
 		},
 		import: function(data){
 			this.initModel(data);
+		},
+
+		saveToLS: function(){
+			var localStore = JSON.parse(localStorage.EasyPeasyBrownieOven || "{}");
+			
+			localStore.brownies = localStore.brownies || {};
+
+			// TODO - ensure this doesnt exceed local storage size limitation
+			localStore.brownies[this.id] = this.export();
+
+			localStorage.EasyPeasyBrownieOven = JSON.stringify(localStore);
 		}
 	};
 
