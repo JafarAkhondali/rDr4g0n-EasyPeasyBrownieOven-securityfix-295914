@@ -126,12 +126,13 @@
 				height: this.height,
 				depth: this.depth,
 				data: this.model
-			}
+			};
 		},
 		import: function(data){
 			this.initModel(data);
 		},
 
+        // TODO - move this functionality into BrownieOven where it belongs
 		saveToLS: function(){
 			var localStore = JSON.parse(localStorage.EasyPeasyBrownieOven || "{}");
 			
@@ -141,7 +142,16 @@
 			localStore.brownies[this.id] = this.export();
 
 			localStorage.EasyPeasyBrownieOven = JSON.stringify(localStore);
-		}
+		},
+        deleteFromLS: function(){
+			var localStore = JSON.parse(localStorage.EasyPeasyBrownieOven || "{}");
+			
+			localStore.brownies = localStore.brownies || {};
+
+			delete localStore.brownies[this.id];
+
+			localStorage.EasyPeasyBrownieOven = JSON.stringify(localStore);
+        }
 	};
 
 	window.BrownieModel = BrownieModel;

@@ -246,4 +246,10 @@ button {
 .btn.passive:hover {
 	color: #333;
 }
-
+.btn.danger{
+	background-color: red;
+	color: white;
+}
+.btn.danger:hover {
+	background-color: red;
+}

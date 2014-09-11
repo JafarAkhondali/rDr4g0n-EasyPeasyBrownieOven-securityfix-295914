@@ -184,6 +184,7 @@
             content: $("#configureBrownieTemplate").innerHTML,
             actions: [
                 { label: "Nevermind", class: "passive close" },
+                { label: "Delete this Guy", class: "danger delete" },
                 { label: "Save Them Changes", class: "primary save" }
             ],
             eventMap: {
@@ -196,6 +197,22 @@
                     app.model.saveToLS();
 
                     this.close();
+                },
+                "click .delete": function(){
+                    if(confirm("You sure idiot?")){
+                        // TODO - better confirmation!
+                        app.model.deleteFromLS();
+
+                        // load up a new brownie
+                        app.loadBrownie(new BrownieModel({
+                            name: "NES Sprite",
+                            width: 24,
+                            height: 24,
+                            depth: 24
+                        }));
+
+                        this.close();
+                    }
                 }
             },
             // gets a specific local brownie by id
@@ -206,10 +223,10 @@
                 return brownies[id];
             },
             getBrownieName: function(){
-                return this.getLocalBrownie(app.model.id).name;
+                return app.model.name;
             },
             getBrownieData: function(){
-                return JSON.stringify(this.getLocalBrownie(app.model.id));
+                return JSON.stringify(this.getLocalBrownie(app.model.id)) || "";
             }
         }).open();
     });
