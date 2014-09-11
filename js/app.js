@@ -128,31 +128,34 @@
             ],
             eventMap: {
                 "click .close": "close",
-                "click .load": function(e){
-                    // TODO - validate!					
-                    var importData = this.modal.querySelector(".import").value,
-                        selectedBrownie = this.modal.querySelector(".brownieList li.selected"),
-                        brownieData;
-
-                    // if import has data, then try to parse that guy
-                    if(importData){
-                        brownieData = importData;
-
-                    // load the selected one from LS
-                    } else if(selectedBrownie){
-                        brownieData = this.getLocalBrownie(selectedBrownie.getAttribute("data-id"));
-                    }
-
-                    if(brownieData) importBrownie(brownieData);
-
-                    this.close();
-                },
+                "click .load": "load",
                 "click .brownieList li": function(e){
                     var currSelected = this.modal.querySelector(".brownieList li.selected");
                     if(currSelected) currSelected.classList.remove("selected");
 
                     e.target.classList.add("selected");
+
+                    this.load();
                 }
+            },
+            load: function(){
+                // TODO - validate!					
+                var importData = this.modal.querySelector(".import").value,
+                    selectedBrownie = this.modal.querySelector(".brownieList li.selected"),
+                    brownieData;
+
+                // if import has data, then try to parse that guy
+                if(importData){
+                    brownieData = importData;
+
+                // load the selected one from LS
+                } else if(selectedBrownie){
+                    brownieData = this.getLocalBrownie(selectedBrownie.getAttribute("data-id"));
+                }
+
+                if(brownieData) importBrownie(brownieData);
+
+                this.close();
             },
             // gets local brownies and returns em in li's
             getLocalBrownies: function(){
@@ -194,14 +197,14 @@
                     var name = this.modal.querySelector(".name").value;
 
                     app.model.name = name;
-                    app.model.saveToLS();
+                    app.saveToLS();
 
                     this.close();
                 },
                 "click .delete": function(){
-                    if(confirm("You sure idiot?")){
+                    if(confirm("You sure, idiot?")){
                         // TODO - better confirmation!
-                        app.model.deleteFromLS();
+                        app.deleteFromLS();
 
                         // load up a new brownie
                         app.loadBrownie(new BrownieModel({

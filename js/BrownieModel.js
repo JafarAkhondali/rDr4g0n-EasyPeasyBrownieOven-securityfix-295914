@@ -71,9 +71,6 @@
 
 			// changeset event with a set of changes made
 			this.emit("changeset", brownieChangeset);
-
-			// TODO - save only every n seconds
-			this.saveToLS();
 		},
 
 		// returns all points for a slice
@@ -130,28 +127,7 @@
 		},
 		import: function(data){
 			this.initModel(data);
-		},
-
-        // TODO - move this functionality into BrownieOven where it belongs
-		saveToLS: function(){
-			var localStore = JSON.parse(localStorage.EasyPeasyBrownieOven || "{}");
-			
-			localStore.brownies = localStore.brownies || {};
-
-			// TODO - ensure this doesnt exceed local storage size limitation
-			localStore.brownies[this.id] = this.export();
-
-			localStorage.EasyPeasyBrownieOven = JSON.stringify(localStore);
-		},
-        deleteFromLS: function(){
-			var localStore = JSON.parse(localStorage.EasyPeasyBrownieOven || "{}");
-			
-			localStore.brownies = localStore.brownies || {};
-
-			delete localStore.brownies[this.id];
-
-			localStorage.EasyPeasyBrownieOven = JSON.stringify(localStore);
-        }
+		}
 	};
 
 	window.BrownieModel = BrownieModel;

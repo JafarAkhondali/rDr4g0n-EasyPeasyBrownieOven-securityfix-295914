@@ -20,7 +20,7 @@
 
         createModel: function(config){
             // TODO - destroy existing model
-            this.model = new BrownieModel(config);
+            this.setModel(new BrownieModel(config));
         },
 
         createView: function(config){
@@ -52,6 +52,13 @@
             this.toolbox = new Toolbox(config);
         },
 
+        setModel: function(model){
+            // TODO - unlisten to old model changes
+            this.model = model;
+
+            this.model.on("change", this.saveToLS.bind(this));
+        },
+
         resizeAllViews: function(){
             this.editors.forEach(function(sliceEditor){
                 sliceEditor.resizeCanvas();
@@ -61,11 +68,31 @@
 
         loadBrownie: function(brownieModel){
             // TODO - properly destroy this.model
-            this.model = brownieModel;
+            this.setModel(brownieModel);
             this.editors.forEach(function(sliceEditor){
                 sliceEditor.loadBrownie(brownieModel);
             });
             this.viewer.loadBrownie(brownieModel);
+        },
+
+		saveToLS: function(){
+			var localStore = JSON.parse(localStorage.EasyPeasyBrownieOven || "{}");
+			
+			localStore.brownies = localStore.brownies || {};
+
+			// TODO - ensure this doesnt exceed local storage size limitation
+			localStore.brownies[this.model.id] = this.model.export();
+
+			localStorage.EasyPeasyBrownieOven = JSON.stringify(localStore);
+		},
+        deleteFromLS: function(){
+			var localStore = JSON.parse(localStorage.EasyPeasyBrownieOven || "{}");
+			
+			localStore.brownies = localStore.brownies || {};
+
+			delete localStore.brownies[this.model.id];
+
+			localStorage.EasyPeasyBrownieOven = JSON.stringify(localStore);
         }
     };
 
