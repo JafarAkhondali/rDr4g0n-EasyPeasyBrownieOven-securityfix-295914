@@ -11,7 +11,7 @@
 [class^="flaticon-"]:before, [class*=" flaticon-"]:before,
 [class^="flaticon-"]:after, [class*=" flaticon-"]:after {   
 	font-family: Flaticon;
-	font-style: normal;
+    font-style: normal;
 }.flaticon-add26:before {
 	content: "\e000";
 }
@@ -21,9 +21,15 @@
 .flaticon-folder63:before {
 	content: "\e002";
 }
-.flaticon-small23:before {
+.flaticon-gross:before {
 	content: "\e003";
 }
-.flaticon-tools3:before {
+.flaticon-redo11:before {
 	content: "\e004";
+}
+.flaticon-tools3:before {
+	content: "\e005";
+}
+.flaticon-undo12:before {
+	content: "\e006";
 }

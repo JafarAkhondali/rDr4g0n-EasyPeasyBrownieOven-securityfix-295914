@@ -83,7 +83,10 @@ ul {
 }
 .fileMenu li:hover {
 	color: white;
-} 
+}
+.fileMenu i.disabled {
+    color: #555;
+}
 
 
 /** TOOLBOX and TOOLS **/

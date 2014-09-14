@@ -10,7 +10,8 @@
 		return document.querySelectorAll(selector);
 	};
 
-    var app = new BrownieOven();
+    // expose a global like this?
+    window.app = new BrownieOven();
 
     // this is the model that all views will
     // share for the app
@@ -80,6 +81,30 @@
 
         app.loadBrownie(brownieModel);
     }
+
+    $(".undoIcon").addEventListener("click", function(){
+        if(app.undoQueue.undoQueue.length){
+            app.undoQueue.undo();
+        }
+    });
+    $(".redoIcon").addEventListener("click", function(){
+        if(app.undoQueue.redoQueue.length){
+            app.undoQueue.redo();
+        }
+    });
+    // watch undoQueue and enable/disable und/redo icons
+    app.undoQueue.on("update", function(){
+        if(app.undoQueue.undoQueue.length){
+            $(".undoIcon").classList.remove("disabled");
+        } else {
+            $(".undoIcon").classList.add("disabled"); 
+        }
+        if(app.undoQueue.redoQueue.length){
+            $(".redoIcon").classList.remove("disabled");
+        } else {
+            $(".redoIcon").classList.add("disabled"); 
+        }
+    });
 	
     $(".newBrownieIcon").addEventListener("click", function(){
         new Modal({

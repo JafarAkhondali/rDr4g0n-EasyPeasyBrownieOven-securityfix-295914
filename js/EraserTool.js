@@ -13,6 +13,10 @@
 		this.size = 1;
 		this.shape = "square";
 
+        // batch up paint actions for easy
+        // undo/redo
+        this.actionBuffer = [];
+
 		// bind context for editor event handlers
 		this.onEditorMouseDown = this.onEditorMouseDown.bind(this);
 		this.onEditorMouseUp = this.onEditorMouseUp.bind(this);
@@ -28,16 +32,53 @@
 	};
 
 	EraserTool.prototype.onEditorMouseDown = function(editor, coords){
-		editor.modelSet([coords[0]-1, coords[1]-1, editor.getSlice()], null);
-		console.log("eraser mousedown at", coords, editor.getSlice(), null);
+        var currCoords = [coords[0]-1, coords[1]-1, editor.getSlice()]; 
+        this.actionBuffer.push({
+            // if currCoords is undefined, store null, which
+            // is treated as deleting a pixel
+            oldVal: [currCoords, editor.modelGet(currCoords) || null],
+            newVal: [currCoords, null]
+        });
+        editor.modelSet(currCoords, null);
 	};
 
 	EraserTool.prototype.onEditorDrag = function(editor, coords){
-		editor.modelSet([coords[0]-1, coords[1]-1, editor.getSlice()], null);
+        var currCoords = [coords[0]-1, coords[1]-1, editor.getSlice()]; 
+        
+        // only set if the oldVal differs from the newVal
+        if(editor.modelGet(currCoords)){
+            this.actionBuffer.push({
+                // if currCoords is undefined, store null, which
+                // is treated as deleting a pixel
+                oldVal: [currCoords, editor.modelGet(currCoords) || null],
+                newVal: [currCoords, null]
+            });
+            editor.modelSet(currCoords, null);
+        }
 	};
 
 	EraserTool.prototype.onEditorMouseUp = function(editor, coords){
-	}
+        // clone actionBuffer array for undo/redo
+        // access via closure
+        var actionBuffer = this.actionBuffer.slice();
+
+        // painting is complete, so create an
+        // undo action and clear actionBuffer
+        app.undoQueue.push({
+            label: "Erase",
+            undo: function(){
+                actionBuffer.forEach(function(vals){
+                    editor.modelSet(vals.oldVal[0], vals.oldVal[1]);
+                });
+            },
+            redo: function(){
+                actionBuffer.forEach(function(vals){
+                    editor.modelSet(vals.newVal[0], null);
+                });
+            }
+        });
+        this.actionBuffer = [];
+	};
 
 	window.EraserTool = EraserTool;
 })();

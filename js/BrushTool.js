@@ -5,13 +5,17 @@
 	 * Toolbox tool for painting on SliceEditor.js
 	 */
 	function BrushTool(config){
-		this.icon = "flaticon-small23";
+		this.icon = "flaticon-gross";
 
 		// TODO - expose various config options in UI
 		this.size = 1;
 		this.shape = "square";
 		this.currColor = "#FFFFFF";
 		this.palette = "NES Basic";
+
+        // batch up paint actions for easy
+        // undo/redo
+        this.actionBuffer = [];
 
 		// bind context for editor event handlers
 		this.onEditorMouseDown = this.onEditorMouseDown.bind(this);
@@ -46,16 +50,54 @@
 		constructor: BrushTool,
 
 		onEditorMouseDown: function(editor, coords){
-			editor.modelSet([coords[0]-1, coords[1]-1, editor.getSlice()], this.currColor);
+            var currCoords = [coords[0]-1, coords[1]-1, editor.getSlice()]; 
+            this.actionBuffer.push({
+                // if currCoords is undefined, store null, which
+                // is treated as deleting a pixel
+                oldVal: [currCoords, editor.modelGet(currCoords) || null],
+                newVal: [currCoords, this.currColor]
+            });
+			editor.modelSet(currCoords, this.currColor);
 		},
 
 		onEditorDrag: function(editor, coords){
-			editor.modelSet([coords[0]-1, coords[1]-1, editor.getSlice()], this.currColor);
+            var currCoords = [coords[0]-1, coords[1]-1, editor.getSlice()]; 
+
+            // only set if the oldVal differs from the newVal
+            if(editor.modelGet(currCoords) !== this.currColor){
+                this.actionBuffer.push({
+                    // if currCoords is undefined, store null, which
+                    // is treated as deleting a pixel
+                    oldVal: [currCoords, editor.modelGet(currCoords) || null],
+                    newVal: [currCoords, this.currColor]
+                });
+                editor.modelSet(currCoords, this.currColor);
+            }
 		},
 
 		onEditorMouseUp: function(editor, coords){
+            // clone actionBuffer array for undo/redo
+            // access via closure
+            var actionBuffer = this.actionBuffer.slice();
+
+            // painting is complete, so create an
+            // undo action and clear actionBuffer
+            app.undoQueue.push({
+                label: "Brush",
+                undo: function(){
+                    actionBuffer.forEach(function(vals){
+                        editor.modelSet(vals.oldVal[0], vals.oldVal[1]);
+                    });
+                },
+                redo: function(){
+                    actionBuffer.forEach(function(vals){
+                        editor.modelSet(vals.newVal[0], vals.newVal[1]);
+                    });
+                }
+            });
+            this.actionBuffer = [];
 		}
-	}
+	};
 
 	window.BrushTool = BrushTool;
 	

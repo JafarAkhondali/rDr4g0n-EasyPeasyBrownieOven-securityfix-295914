@@ -6,6 +6,7 @@
      */
     function BrownieOven(){
         this.editors = [];       
+        this.undoQueue = new UndoQueue();
     }
 
     BrownieOven.prototype = {
@@ -73,11 +74,13 @@
                 sliceEditor.loadBrownie(brownieModel);
             });
             this.viewer.loadBrownie(brownieModel);
+
+            this.undoQueue.clear();
         },
 
 		saveToLS: function(){
 			var localStore = JSON.parse(localStorage.EasyPeasyBrownieOven || "{}");
-			
+	
 			localStore.brownies = localStore.brownies || {};
 
 			// TODO - ensure this doesnt exceed local storage size limitation
