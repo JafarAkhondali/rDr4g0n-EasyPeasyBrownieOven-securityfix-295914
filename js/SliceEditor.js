@@ -1,7 +1,7 @@
 (function(){
 	"use strict";
 
-	var LAYER_OPACITY = .25,
+	var LAYER_OPACITY = 0.25,
 		GRID_COLOR = "#555555",
 		CURSOR_HINT_COLOR = "#4CE806";
 
@@ -164,6 +164,9 @@
 			px[0]--; px[1]--;
 			this.cursorPos = px;
 			this.emit("mousemove", px);
+            
+            // prevent dragging from highlighting
+            e.preventDefault();
 		},
 
 		onMouseOut: function(e){
@@ -243,7 +246,7 @@
 			this._slice = 0;
 			this.resizeCanvas();
 		}
-	}
+	};
 
 	// http://stackoverflow.com/a/17108084/957341
 	// but modified by me
@@ -252,15 +255,15 @@
 
 		// for touch devices
 		if(isTouchSupported){ 
-			return [evt.clientX-containerX, evt.clientY-containerY]
+			return [evt.clientX-containerX, evt.clientY-containerY];
 
 	    //for webkit browser like safari and chrome
-		} else if(evt.offsetX || evt.offsetX == 0){
+		} else if(evt.offsetX || evt.offsetX === 0){
 		   	return [evt.offsetX, evt.offsetY];
 
 		// for mozilla firefox
-		} else if(evt.layerX || evt.layerX == 0){
-			return [evt.layerX, evt.layerY]
+		} else if(evt.layerX || evt.layerX === 0){
+			return [evt.layerX, evt.layerY];
 		}
 	}
 
