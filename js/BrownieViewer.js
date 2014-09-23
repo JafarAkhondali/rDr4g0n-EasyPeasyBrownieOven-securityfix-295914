@@ -2,6 +2,63 @@
 
 	"use strict";
 
+    /* Trackball controls for brownie viewer. Thanks rye! */
+    function Trackball(eventElement, targetMesh) {
+        this.element = eventElement;
+        this.mesh = targetMesh;
+        this.mouseDown = false;
+        this.pos = {x:0, y:0};
+
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.onMouseDown = this.onMouseDown.bind(this);
+        this.onMouseUp = this.onMouseUp.bind(this);
+        this.rotate = this.rotate.bind(this);
+
+        this.element.addEventListener('mousedown', this.onMouseDown, false);
+        window.addEventListener('mouseup', this.onMouseUp, false);
+        window.addEventListener('mousemove', this.onMouseMove, false);
+    }
+
+    Trackball.prototype = {
+        constructor: Trackball,
+
+        onMouseMove: function(e) {
+            if (!this.mouseDown) { 
+                return; 
+            }
+            var dx = e.clientX -this.pos.x;
+            var dy = e.clientY -this.pos.y;
+            this.rotate(dx*0.015, dy*0.015);
+            this.pos.x = e.clientX; 
+            this.pos.y = e.clientY;
+        },
+
+        rotate: function(dx, dy) {
+            var tempMat = new THREE.Matrix4();
+            tempMat.makeRotationAxis(new THREE.Vector3(0,1,0), dx);
+            tempMat.multiply(this.mesh.matrix);
+            var tempMat2 = new THREE.Matrix4();
+            tempMat2.makeRotationAxis(new THREE.Vector3(1,0,0), dy);
+            tempMat2.multiply(tempMat);
+            this.mesh.rotation.setFromRotationMatrix(tempMat2);
+        },
+
+        onMouseDown: function(e) {
+            if (e.button === 0) {
+                this.mouseDown = true;
+                this.pos.x = e.clientX;
+                this.pos.y = e.clientY;
+            }
+        },
+
+        onMouseUp: function(e) {
+            if (e.button === 0) {
+                this.mouseDown = false;
+            }
+        }
+    };
+
+
 	/**
 	 * Creates a threejs rendering context in the provided
 	 * canvas and displays a single brownie voxel thingy
@@ -22,6 +79,29 @@
 
 		this.resizeCanvas();
 		this.el.appendChild(this.canvas);
+
+        this.controlsVM = new ViewModel({
+            template: document.getElementById("brownieViewerControlsTemplate").innerHTML,
+            model: this,
+            eventMap: {
+                "click .showSlice": function(e){
+                    if(e.target.checked){
+                        // TODO - this is terrible and dumb and smells like a butt
+                        this.model.shouldShowSlice = true;
+                        this.model.showSlice(this.model.model.getSlice(app.editors[0].getSlice()));
+                    } else {
+                        this.model.shouldShowSlice = false;
+                        this.model.unshowSlice();
+                    }
+                }
+            },
+            init: function(){
+            }
+        });
+        // default to showing current slice
+        this.shouldShowSlice = true;
+
+        this.el.appendChild(this.controlsVM.el);
 
 		this.camera = new THREE.PerspectiveCamera(65, this.canvas.width / this.canvas.height, 1, 1000);
 		this.camera.position.set(0, -this.model.height, this.model.depth);
@@ -70,8 +150,10 @@
 		this.newBrownie();
 
 		// auto-rotate meshes
-		this.autoRotateMesh = this.autoRotateMesh.bind(this);
-		this.autoRotateMesh();
+		//this.autoRotateMesh = this.autoRotateMesh.bind(this);
+		//this.autoRotateMesh();
+        this.updateMesh = this.updateMesh.bind(this);
+        this.updateMesh();
 	}
 
 	BrownieViewer.prototype = {
@@ -88,6 +170,10 @@
 
 			// add cursor hint
 			this.meshes["brownie"].add(this.meshes["cursor"]);
+
+            // trackball controls
+            // TODO - clear previous trackball object/events
+            new Trackball(this.el, this.meshes["brownie"]);
 
 			this.scene.add(this.meshes["brownie"]);
 			this.renderScene();
@@ -118,6 +204,10 @@
 		// make brownie translucent and show the
 		// current slice
 		showSlice: function(sliceData){
+            // TODO - probably shouldn't do this shouldShowSlice
+            // check here
+            if(!this.shouldShowSlice) return;
+
 			var sliceBrownie = this.brownies["slice"] = new Brownie(this.renderer);
 
 			this.meshes["brownie"].material = this.materials["brownieTransparent"];
@@ -172,11 +262,11 @@
 			this.renderer.render(this.scene, this.camera);
 		},
 
-		autoRotateMesh: function(){
+		updateMesh: function(){
 			// TODO - rotate camera instead of mesh?
-			this.meshes["brownie"].rotation.y += 0.01;
+			//this.meshes["brownie"].rotation.y += 0.01;
 			this.renderScene();
-			requestAnimationFrame(this.autoRotateMesh);
+			requestAnimationFrame(this.updateMesh);
 		},
 
 		updateCursorPosition: function(coords){

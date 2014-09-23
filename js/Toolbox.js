@@ -145,7 +145,7 @@
 		deselectToolEl: function(el){
 			el.classList.remove("selected");
 		}
-	}
+	};
 
 	window.Toolbox = Toolbox;
 })();
