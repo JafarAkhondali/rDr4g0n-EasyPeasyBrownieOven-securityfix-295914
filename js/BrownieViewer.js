@@ -93,12 +93,22 @@
                         this.model.shouldShowSliceBool = false;
                         this.model.unshowSlice();
                     }
-                }
+                },
+                "click .rotateY": function(e){
+                    if(e.target.checked){
+                        this.model.shouldRotateYBool = true;
+                    } else {
+                        this.model.shouldRotateYBool= false;
+                    }
+                },
             },
             init: function(){
             },
             shouldShowSlice: function(){
                 return this.model.shouldShowSliceBool ? "checked" : "";
+            },
+            shouldRotateY: function(){
+                return this.model.shouldRotateYBool ? "checked" : "";
             }
         });
         // default to showing current slice
@@ -266,8 +276,9 @@
 		},
 
 		updateMesh: function(){
-			// TODO - rotate camera instead of mesh?
-			//this.meshes["brownie"].rotation.y += 0.01;
+            if(this.shouldRotateYBool) {
+                this.meshes["brownie"].rotation.y += 0.01; 
+            }
 			this.renderScene();
 			requestAnimationFrame(this.updateMesh);
 		},
@@ -331,7 +342,7 @@
 			this.renderBrownie();
 			this.renderScene();
 		}
-	}
+	};
 
 	window.BrownieViewer = BrownieViewer;
 
