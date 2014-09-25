@@ -26,6 +26,7 @@
     // NOTE: there can be only one view for now
     app.createView({
 		el: $("#brownieViewer"),
+        zoomFactor: 2
 	});
 
     // add a slice editor to the app

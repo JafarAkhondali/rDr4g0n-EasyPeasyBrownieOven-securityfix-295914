@@ -71,6 +71,7 @@
 		// TODO - ensure el exists
 		this.el = config.el;
 
+        this.zoomFactor = config.zoomFactor || 1;
 		this.canvas = document.createElement("canvas");
 		
 		this.renderer = new THREE.WebGLRenderer({
@@ -94,6 +95,13 @@
                         this.model.unshowSlice();
                     }
                 },
+                "click .rotateX": function(e){
+                    if(e.target.checked){
+                        this.model.shouldRotateXBool = true;
+                    } else {
+                        this.model.shouldRotateXBool= false;
+                    }
+                },
                 "click .rotateY": function(e){
                     if(e.target.checked){
                         this.model.shouldRotateYBool = true;
@@ -101,14 +109,30 @@
                         this.model.shouldRotateYBool= false;
                     }
                 },
+                "click .rotateZ": function(e){
+                    if(e.target.checked){
+                        this.model.shouldRotateZBool = true;
+                    } else {
+                        this.model.shouldRotateZBool= false;
+                    }
+                },
+                "click .resetRotation": function(){
+                    this.model.meshes["brownie"].rotation.set(0,0,0);
+                }
             },
             init: function(){
             },
             shouldShowSlice: function(){
                 return this.model.shouldShowSliceBool ? "checked" : "";
             },
+            shouldRotateX: function(){
+                return this.model.shouldRotateXBool ? "checked" : "";
+            },
             shouldRotateY: function(){
                 return this.model.shouldRotateYBool ? "checked" : "";
+            },
+            shouldRotateZ: function(){
+                return this.model.shouldRotateZBool ? "checked" : "";
             }
         });
         // default to showing current slice
@@ -117,7 +141,7 @@
         this.el.appendChild(this.controlsVM.el);
 
 		this.camera = new THREE.PerspectiveCamera(65, this.canvas.width / this.canvas.height, 1, 1000);
-		this.camera.position.set(0, -this.model.height, this.model.depth);
+		this.camera.position.set(0, -this.model.height, this.model.depth * this.zoomFactor);
 
 		this.light = new THREE.PointLight(0xFFFFFF);
 		this.light.position = this.camera.position.clone();
@@ -276,8 +300,15 @@
 		},
 
 		updateMesh: function(){
+            // TODO - clean these rotation things up
             if(this.shouldRotateYBool) {
                 this.meshes["brownie"].rotation.y += 0.01; 
+            }
+            if(this.shouldRotateXBool) {
+                this.meshes["brownie"].rotation.x += 0.01; 
+            }
+            if(this.shouldRotateZBool) {
+                this.meshes["brownie"].rotation.z += 0.01; 
             }
 			this.renderScene();
 			requestAnimationFrame(this.updateMesh);
@@ -337,7 +368,7 @@
 			this.brownies["brownie"].fromJSON(brownieData);
 
 			// update camera position with new height/depth
-			this.camera.position.set(0, -this.model.height, this.model.depth);
+			this.camera.position.set(0, 0, this.model.depth * this.zoomFactor);
 
 			this.renderBrownie();
 			this.renderScene();
