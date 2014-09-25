@@ -32,13 +32,9 @@
         // show x, y and slice
         this.statusVM = new ViewModel({
             template: document.getElementById("sliceEditorControlsTemplate").innerHTML,
-            // use an interface to get to this sliceEditor
-            // because the sliceEditor object is updated
-            // very frequently, which would cause this view model
-            // object to re-render too much tacos
-            model: {
-                slice: thisSliceEditor.getSlice
-            },
+            // TODO - the `this` object updates frequently
+            // causing the VM to re-render rapidly :(
+            model: thisSliceEditor,
             eventMap: {
                 "change .onionSkinSelect": function(e){
                     this.setOnionSkin(e.target.value);
