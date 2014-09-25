@@ -87,19 +87,22 @@
                 "click .showSlice": function(e){
                     if(e.target.checked){
                         // TODO - this is terrible and dumb and smells like a butt
-                        this.model.shouldShowSlice = true;
+                        this.model.shouldShowSliceBool = true;
                         this.model.showSlice(this.model.model.getSlice(app.editors[0].getSlice()));
                     } else {
-                        this.model.shouldShowSlice = false;
+                        this.model.shouldShowSliceBool = false;
                         this.model.unshowSlice();
                     }
                 }
             },
             init: function(){
+            },
+            shouldShowSlice: function(){
+                return this.model.shouldShowSliceBool ? "checked" : "";
             }
         });
         // default to showing current slice
-        this.shouldShowSlice = true;
+        this.shouldShowSliceBool = true;
 
         this.el.appendChild(this.controlsVM.el);
 
@@ -206,7 +209,7 @@
 		showSlice: function(sliceData){
             // TODO - probably shouldn't do this shouldShowSlice
             // check here
-            if(!this.shouldShowSlice) return;
+            if(!this.shouldShowSliceBool) return;
 
 			var sliceBrownie = this.brownies["slice"] = new Brownie(this.renderer);
 

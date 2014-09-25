@@ -65,7 +65,7 @@
 		setModel: function(model){
 			this.model = model;
 		}
-	}
+	};
 
 	function bindEvent(el, eventAction, selector, func, context){
 		// TODO - event handlers that can be removed

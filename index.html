@@ -123,8 +123,18 @@
 		<div class="formSectionLabel">Brownie Export Data</div>
 		<textarea disabled>{{getBrownieData}}</textarea>
 	</script>
+
+
     <script type="text/template" id="brownieViewerControlsTemplate">
-        <input type="checkbox" class="showSlice" checked>&nbsp;<label>Highlight Slice</label>
+        <div class="statusBar">
+            <input type="checkbox" class="showSlice" {{shouldShowSlice}}>&nbsp;<label class="label">Highlight Slice</label>
+        </div>
+    </script>
+
+    <script type="text/template" id="sliceEditorControlsTemplate">
+        <div class="statusBar">
+            <span class="label">slice: </span>{{model._slice}}
+        </div>
     </script>
 
 	<script src="lib/three.js"></script>

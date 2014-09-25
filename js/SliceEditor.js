@@ -14,6 +14,7 @@
 		eventEmitter.call(this);
 
 		this.initModel(config.model);
+        this._slice = 0;
 
 		// TODO - ensure el exists
 		this.el = config.el;
@@ -21,6 +22,13 @@
 		this.canvas = document.createElement("canvas");
 		this.resizeCanvas();
 		this.el.appendChild(this.canvas);
+
+        // show x, y and slice
+        this.statusVM = new ViewModel({
+            template: document.getElementById("sliceEditorControlsTemplate").innerHTML,
+            model: this
+        });
+        this.el.appendChild(this.statusVM.el);
 
 		this.context = this.canvas.getContext("2d");
 
@@ -43,8 +51,6 @@
 		this.canvas.addEventListener("mousewheel", this.onMouseWheel);
 		this.canvas.addEventListener("mousemove", this.onMouseMove);
 		this.canvas.addEventListener("mouseout", this.onMouseOut);
-
-		this._slice = 0;
 
 		this.render = this.render.bind(this);
 		this.render();
