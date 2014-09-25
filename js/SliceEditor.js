@@ -16,6 +16,9 @@
 		this.initModel(config.model);
         this._slice = 0;
 
+        // TODO - retrieve from config?
+        this.onionSkin = -1;
+
 		// TODO - ensure el exists
 		this.el = config.el;
 
@@ -23,10 +26,47 @@
 		this.resizeCanvas();
 		this.el.appendChild(this.canvas);
 
+        // TODO - dont use thisSliceEditor var... :/
+        var thisSliceEditor = this;
+
         // show x, y and slice
         this.statusVM = new ViewModel({
             template: document.getElementById("sliceEditorControlsTemplate").innerHTML,
-            model: this
+            // use an interface to get to this sliceEditor
+            // because the sliceEditor object is updated
+            // very frequently, which would cause this view model
+            // object to re-render too much tacos
+            model: {
+                slice: thisSliceEditor.getSlice
+            },
+            eventMap: {
+                "change .onionSkinSelect": function(e){
+                    this.setOnionSkin(e.target.value);
+                }
+            },
+            getOnionSkin: function(){
+                return thisSliceEditor.onionSkin;
+            },
+            setOnionSkin: function(val){
+                thisSliceEditor.onionSkin = +val;
+            },
+            generateOnionOptions: function(){
+                var optsMap = {
+                    "0": "none",
+                    "-1": "below",
+                    "1": "above"
+                };
+                var opts = [],
+                    currOnionSkin = this.getOnionSkin();
+
+                for(var i in optsMap){
+                    // NOTE: currOnionSkin == i allows type coercion since
+                    // i will be a string but currOnionSkin will be a number
+                    opts.push("<option value='"+ i +"' "+ (currOnionSkin == i ? "selected" : "") +">"+ optsMap[i] +"</option>");
+                }
+
+                return opts.join("");
+            }
         });
         this.el.appendChild(this.statusVM.el);
 
@@ -62,9 +102,9 @@
 		render: function(){
 
 			var currLayer = [],
-				prevLayer = [],
+				onionLayer = [],
 				pxMultiplier = this.pxMultiplier,
-				val, underVal;
+				val, onionVal;
 
 			// clear canvas
 			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -75,15 +115,15 @@
 				for(var y = 0; y < this.brownieHeight; y++){
 
 					val = this.modelGet([x, y, this.getSlice()]);
-					underVal = this.modelGet([x, y, this.getSlice() - 1]);
+					onionVal = this.modelGet([x, y, this.getSlice() + this.onionSkin]);
 
 					// if a value should be set here
 					if(val){
 						currLayer.push([x, y, val]);
 						
-					// if no value on this layer, but the layer below has something
-					} else if(underVal){
-						prevLayer.push([x, y, underVal]);
+					// if no value on this layer, but the onion skin layer has something
+					} else if(this.onionSkin && onionVal){
+						onionLayer.push([x, y,onionVal]);
 
 					// if there is nothing on this pixel, and
 					// grid should be shown, draw the grid box
@@ -100,7 +140,7 @@
       		this.context.fill();
 
 			// draw previous layer
-			prevLayer.forEach(function(px){
+			onionLayer.forEach(function(px){
 				this.context.fillStyle = "rgba(" + hexColorToInt(px[2]).join(",") +","+ LAYER_OPACITY +")";
 				this.context.fillRect(px[0] * pxMultiplier, px[1] * pxMultiplier, pxMultiplier, pxMultiplier);
 				this.context.strokeStyle = px[2];
