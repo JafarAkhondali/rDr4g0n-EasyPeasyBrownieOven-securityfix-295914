@@ -167,6 +167,7 @@
             load: function(){
                 // TODO - validate!
                 var importData = this.modal.querySelector(".import").value,
+                    scriptData = this.modal.querySelector(".script").value,
                     selectedBrownie = this.modal.querySelector(".brownieList li.selected"),
                     brownieData;
 
@@ -174,6 +175,11 @@
                 if(importData){
                     brownieData = importData;
 
+                // if a script was provided, run that mug
+                } else if(scriptData){
+                    // HACK - this is just put here to make things work. its a hack!
+                    parseBrownieScript(scriptData);
+                
                 // load the selected one from LS
                 } else if(selectedBrownie){
                     brownieData = this.getLocalBrownie(selectedBrownie.getAttribute("data-id"));
@@ -269,23 +275,38 @@
     
         var brownieModel = new BrownieModel({
             name: "procedural brownie",
-            width: 24,
-            height: 24,
-            depth: 24
+            width: 50,
+            height: 50,
+            depth: 50
         });
 
         // TODO - use a worker with a well defined
         // API to make this as clean and safe as possible
         (function(){
-            var model = {
-                set: function(x, y, z, color){
-                    brownieModel.model[brownieModel.createKey([x, y, z])] = color;
-                },
-                unset: function(x, y, z){
-                    brownieModel.model[brownieModel.createKey([x, y, z])] = null;
-                },
-                
+
+            // takes an array of 3 0-1 values and 
+            // generates a hex color for it
+            var colorArrayToHex = function(arr){
+                var hex = ["#"];
+                     
+                arr.forEach(function(color){
+                    hex.push(parseInt(color*16, 16));
+                });
+
+                return hex.join("");
             };
+            var clear = function(){};
+            var setCamera = function(){};
+            var set = function(x, y, z, r, g, b){
+                brownieModel.model[brownieModel.createKey([x, y, z])] = colorArrayToHex([r,g,b]);
+            };
+            var unset = function(x, y, z){
+                brownieModel.model[brownieModel.createKey([x, y, z])] = null;
+            };
+            var get = function(x, y, z){
+                return brownieModel.model[brownieModel.createKey([x, y, z])];
+            };
+
             eval(script);
         })();
 
