@@ -81,6 +81,8 @@
 		this.resizeCanvas();
 		this.el.appendChild(this.canvas);
 
+        this.brownieMaterial = config.brownieMaterial || "brownieFlat";
+
         this.controlsVM = new ViewModel({
             template: document.getElementById("brownieViewerControlsTemplate").innerHTML,
             model: this,
@@ -118,6 +120,10 @@
                 },
                 "click .resetRotation": function(){
                     this.model.meshes["brownie"].rotation.set(0,0,0);
+                },
+                "change .materialSelect": function(e){
+                    this.model.brownieMaterial = e.target.value;
+                    this.model.updateBrownieMaterial();
                 }
             },
             init: function(){
@@ -133,6 +139,19 @@
             },
             shouldRotateZ: function(){
                 return this.model.shouldRotateZBool ? "checked" : "";
+            },
+            generateMaterialOptions: function(){
+                var optsMap = {
+                    "browniePhong": "phong",
+                    "brownieFlat": "flat"
+                };
+                var opts = [];
+
+                for(var i in optsMap){
+                    opts.push("<option value='"+ i +"' "+ (this.model.brownieMaterial === i ? "selected" : "") +">"+ optsMap[i] +"</option>");
+                }
+
+                return opts.join("");
             }
         });
         // default to showing current slice
@@ -152,7 +171,7 @@
 		this.brownies = {};
 		this.meshes = {};
 		this.materials = {
-			brownie: new THREE.MeshPhongMaterial({
+			browniePhong: new THREE.MeshPhongMaterial({
 				color: 0xFFFFFF,
 				vertexColors: THREE.VertexColors,
 				specular: 0
@@ -203,14 +222,14 @@
 			// remove previous brownie mesh before updating
 			this.scene.remove(this.meshes["brownie"]);
 
-			this.meshes["brownie"] = new THREE.Mesh(geo, this.materials["brownieFlat"]);
+			this.meshes["brownie"] = new THREE.Mesh(geo, this.materials[this.brownieMaterial]);
 
 			// add cursor hint
 			this.meshes["brownie"].add(this.meshes["cursor"]);
 
             // trackball controls
             // TODO - clear previous trackball object/events
-            new Trackball(this.el, this.meshes["brownie"]);
+            new Trackball(this.canvas, this.meshes["brownie"]);
 
 			this.scene.add(this.meshes["brownie"]);
 			this.renderScene();
@@ -254,7 +273,7 @@
 
 			this.meshes["slice"] = new THREE.Mesh(
 				sliceBrownie.getGeometry(),
-				this.materials["brownieFlat"]
+				this.materials[this.brownieMaterial]
 			);
 
 			// add new slice mesh
@@ -276,7 +295,7 @@
 		// restore brownie to original material
 		// and remove slice
 		unshowSlice: function(){
-			this.meshes["brownie"].material = this.materials["brownieFlat"];
+			this.meshes["brownie"].material = this.materials[this.brownieMaterial];
 			// remove previous slice
 			this.meshes["brownie"].remove(this.meshes["slice"]);
 			// remove slice brownie
@@ -325,6 +344,10 @@
 				this.meshes["cursor"].position.set(coords[0] + 0.5, coords[1] + 0.5, coords[2] + 0.5);
 			}
 		},
+
+        updateBrownieMaterial: function(){
+           this.meshes["brownie"].material = this.materials[this.brownieMaterial]; 
+        },
 
 		resizeCanvas: function(){
 			this.canvas.width = Math.min(this.el.clientHeight, this.el.clientWidth);
