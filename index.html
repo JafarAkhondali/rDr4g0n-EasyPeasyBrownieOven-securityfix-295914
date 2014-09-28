@@ -128,13 +128,20 @@
     <script type="text/template" id="brownieViewerControlsTemplate">
         <div class="statusBar">
             <input type="checkbox" class="showSlice" {{shouldShowSlice}}>&nbsp;<label class="label">Highlight Slice</label>
-            <input type="checkbox" class="rotateX" {{shouldRotateX}}>&nbsp;<label class="label">Rotate X</label>
-            <input type="checkbox" class="rotateY" {{shouldRotateY}}>&nbsp;<label class="label">Rotate Y</label>
-            <input type="checkbox" class="rotateZ" {{shouldRotateZ}}>&nbsp;<label class="label">Rotate Z</label>
-            <a href="#" class="resetRotation">reset rotatialation</a>
-            <select class="materialSelect">
-                {{generateMaterialOptions}}
-            </select>
+
+            <label>Rotate:</label>
+            <input type="checkbox" class="rotateX" {{shouldRotateX}}>&nbsp;<label class="label">X</label>
+            <input type="checkbox" class="rotateY" {{shouldRotateY}}>&nbsp;<label class="label">Y</label>
+            <input type="checkbox" class="rotateZ" {{shouldRotateZ}}>&nbsp;<label class="label">Z</label>
+
+            <a href="#" class="resetRotation">reset</a>
+
+            <div style="float:right">
+                <label>Material</label>
+                <select class="materialSelect">
+                    {{generateMaterialOptions}}
+                </select>
+            </div>
         </div>
     </script>
 
