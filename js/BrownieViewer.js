@@ -174,13 +174,15 @@
 			browniePhong: new THREE.MeshPhongMaterial({
 				color: 0xFFFFFF,
 				vertexColors: THREE.VertexColors,
-				specular: 0
+				specular: 0,
+                map: ambientOcclusionTexture
 			}),
 			brownieFlat: new THREE.MeshBasicMaterial({
 				color: 0xFFFFFF,
 				vertexColors: THREE.VertexColors,
 				specular: 0,
-				shading: THREE.FlatShading
+				shading: THREE.FlatShading,
+                map: ambientOcclusionTexture
 			}),
 			cursor: new THREE.MeshBasicMaterial({
 				wireframe: true,
