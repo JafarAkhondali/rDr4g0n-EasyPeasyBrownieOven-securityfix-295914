@@ -163,7 +163,7 @@
 		this.camera.position.set(0, -this.model.height, this.model.depth * this.zoomFactor);
 
 		this.light = new THREE.PointLight(0xFFFFFF);
-		this.light.position = this.camera.position.clone();
+		this.light.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
 
 		this.scene = new THREE.Scene();
 		this.scene.add(this.light);
@@ -191,6 +191,7 @@
 			}),
 			brownieTransparent: new THREE.MeshPhongMaterial({
 				color: 0xFFFFFF,
+                map: whiteTexture,
 				vertexColors: THREE.VertexColors,
 				specular: 0,
 				transparent: true,
@@ -200,7 +201,7 @@
 
 		// cursor hint voxel
 		this.meshes["cursor"] = new THREE.Mesh(
-			new THREE.CubeGeometry(1, 1, 1),
+			new THREE.BoxGeometry(1, 1, 1),
 			this.materials["cursor"]
 		);
 

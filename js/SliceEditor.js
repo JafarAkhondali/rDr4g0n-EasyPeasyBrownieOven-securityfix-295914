@@ -230,7 +230,7 @@
 		modelSet: function(coords, val){
 			var translatedCoords = this.translateOrigin(coords);
 
-            console.log("coords:", coords, "translatedCoords:", translatedCoords);
+            // console.log("coords:", coords, "translatedCoords:", translatedCoords);
 			// if val is null, delete the value
 			if(val === null){
 				delete this.model.model[this.model.createKey([translatedCoords[0], translatedCoords[1], translatedCoords[2]])];
