@@ -142,7 +142,7 @@
             },
             generateMaterialOptions: function(){
                 var optsMap = {
-                    "browniePhong": "phong",
+                    "browniePhong": "phong + AO",
                     "brownieFlat": "flat"
                 };
                 var opts = [];
@@ -182,7 +182,7 @@
 				vertexColors: THREE.VertexColors,
 				specular: 0,
 				shading: THREE.FlatShading,
-                map: ambientOcclusionTexture
+                map: whiteTexture
 			}),
 			cursor: new THREE.MeshBasicMaterial({
 				wireframe: true,
