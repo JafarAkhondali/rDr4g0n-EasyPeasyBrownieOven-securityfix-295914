@@ -16,7 +16,7 @@
             // TODO - dont directly edit user's config?
             config.model = this.model;
             
-            this.editors.push(new SliceEditor(config));                
+            this.editors.push(new SliceEditor(config));
         },
 
         createModel: function(config){

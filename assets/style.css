@@ -136,6 +136,13 @@ ul {
 
 
 
+.workspace {
+    width: calc(100% - 200px);
+    height: 100%;
+    align-items: stretch;
+    border-top: solid white 4px;
+}
+
 .modalWrap {
 	position: absolute;
 	width: 100%;
@@ -269,3 +276,4 @@ button {
 .btn.danger:hover {
 	background-color: red;
 }
+

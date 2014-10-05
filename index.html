@@ -29,16 +29,23 @@
 	</div>
 
 	<div class="hbox" style="width: calc(100% - 43px);">
-
 		<div id="toolProperties" class="toolProperties"></div>
-
-		<div class="hbox" style="width: calc(100% - 200px); align-items: stretch; border-top: solid white 4px;">
-			<div id="sliceEditor" class="sliceEditor" style="width: 50%; margin: 10px;"></div>
-			<div id="brownieViewer" class="brownieViewer" style="width: 50%; margin: 10px;"></div>
-		</div>
+		<div id="workspace" class="hbox workspace" style=""></div>
 	</div>
 
 	<!-- TEMPLATES -->
+    <script type="text/template" id="simpleLayoutTemplate">
+        <div id="sliceEditor" class="sliceEditor" style="width: 50%; margin: 10px;"></div>
+        <div id="brownieViewer" class="brownieViewer" style="width: 50%; margin: 10px;"></div>
+    </script>
+    <script type="text/template" id="scriptLayoutTemplate">
+        <div style="width: 50%; margin: 10px;">
+            <div id="scriptEditor" style="width: 100%; height: 500px;"></div>
+            <button id="doit" class="btn primary" style="float:right;">DO IT MOTHERFATHER!</button>
+        </div>
+        <div id="brownieViewer" class="brownieViewer" style="width: 50%; margin: 10px;"></div>
+    </script>
+
 	<script type="text/template" id="brushToolTemplate">
 		<label>Size</label>
 		<input type="number" min="1" max="5" value="1">
@@ -160,6 +167,10 @@
 
 	<script src="lib/three.js"></script>
 	<script src="lib/brownie.js"></script>
+	<script src="lib/ace.js"></script>
+	<script src="lib/mode-javascript.js"></script>
+	<script src="lib/worker-javascript.js"></script>
+	<script src="lib/theme-monokai.js"></script>
 
 	<script src="js/eventEmitterMixin.js"></script> 
 	<script src="js/ViewModel.js"></script> 
