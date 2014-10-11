@@ -326,6 +326,8 @@
             zoomFactor: 2
         });
 
+        // TODO - keep previous script!
+
         var editor = ace.edit("scriptEditor");
         editor.setTheme("ace/theme/monokai");
         editor.getSession().setMode("ace/mode/javascript");

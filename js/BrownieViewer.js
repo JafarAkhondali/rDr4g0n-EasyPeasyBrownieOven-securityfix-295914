@@ -182,14 +182,14 @@
 				color: 0xFFFFFF,
 				vertexColors: THREE.VertexColors,
 				specular: 0,
-                map: ambientOcclusionTexture
+                //map: new THREE.Texture(ambientOcclusionTexture.image)
 			}),
 			brownieFlat: new THREE.MeshBasicMaterial({
 				color: 0xFFFFFF,
 				vertexColors: THREE.VertexColors,
 				specular: 0,
 				shading: THREE.FlatShading,
-                map: whiteTexture
+                //map: new THREE.Texture(whiteTexture.image)
 			}),
 			cursor: new THREE.MeshBasicMaterial({
 				wireframe: true,
@@ -198,7 +198,7 @@
 			}),
 			brownieTransparent: new THREE.MeshPhongMaterial({
 				color: 0xFFFFFF,
-                map: whiteTexture,
+                //map: new THREE.Texture(whiteTexture.image),
 				vertexColors: THREE.VertexColors,
 				specular: 0,
 				transparent: true,
