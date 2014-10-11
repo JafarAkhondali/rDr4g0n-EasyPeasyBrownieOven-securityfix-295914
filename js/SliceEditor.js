@@ -22,6 +22,13 @@
 		// TODO - ensure el exists
 		this.el = config.el;
 
+        // add action bar to this mug
+        // TODO - use a proper VM for panel or something
+        var titleBar = document.createElement("div");
+        titleBar.innerHTML = "<span class='title'>Slice Editor</span>";
+        titleBar.classList.add("titleBar");
+        this.el.appendChild(titleBar);
+
 		this.canvas = document.createElement("canvas");
 		this.resizeCanvas();
 		this.el.appendChild(this.canvas);

@@ -27,6 +27,22 @@
         app.resizeAllViews();
 	};
 
+    // HACK - toggle workspace
+    // TODO - some legit UI element for workspace selection
+    var currWorkspace = "simple";
+    $(".workspaceToggleIcon").addEventListener("click", function(){
+        switch(currWorkspace){
+            case "script":
+                loadSimpleWorkspace();
+                currWorkspace = "simple";
+                break;
+            case "simple":
+                loadScriptWorkspace();
+                currWorkspace = "script";
+                break;
+        }
+    });
+
     // set undo/redo queue
     $(".undoIcon").addEventListener("click", function(){
         if(app.undoQueue.undoQueue.length){
@@ -219,7 +235,15 @@
 
     // load workspace
     // TODO - choose workspace from user config
-    loadScriptWorkspace();
+    loadSimpleWorkspace();
+
+    // open a new empty brownie
+    app.loadBrownie(new BrownieModel({
+        name: "NES sprite",
+        height: 24,
+        width: 24,
+        depth: 24
+    }));
 
     function importBrownie(data){
         var brownieData,
@@ -255,6 +279,10 @@
         // load workspace layout
         $("#workspace").innerHTML = $("#simpleLayoutTemplate").innerHTML;
 
+        // TODO - this is ugly hax. get rid of it idiot
+        $("#toolProperties").style.display = "block";
+        $("#workspace").style.width = "calc(100% - 200px)";
+        
         // the primary 3D view of the brownie
         // NOTE: there can be only one view for now
         app.createView({
@@ -301,22 +329,33 @@
         var editor = ace.edit("scriptEditor");
         editor.setTheme("ace/theme/monokai");
         editor.getSession().setMode("ace/mode/javascript");
-        // TODO - get rid of ruler, adjust theme, fill vertical height
+        editor.setShowPrintMargin(false);
+        // TODO - adjust theme, fill vertical height
         //    reduce width, light/dark theme
 
-        $("#doit").addEventListener("click", function(e){
+        $("#render").addEventListener("click", function(e){
             parseBrownieScript(editor.getValue());
+        });
+        $("#clearRender").addEventListener("click", function(e){
+            parseBrownieScript(editor.getValue(), true);
         });
     }
 
-    function parseBrownieScript(script){
-    
-        var brownieModel = new BrownieModel({
-            name: "procedural brownie",
-            width: 50,
-            height: 50,
-            depth: 50
-        });
+    function parseBrownieScript(script, clear){
+        
+        var brownieModel;
+        // if clear is set, create a new brownieModel
+        
+        if(clear){
+            brownieModel = new BrownieModel({
+                name: "procedural brownie",
+                width: 50,
+                height: 50,
+                depth: 50
+            });
+        } else {
+            brownieModel = app.model;
+        }
 
         // TODO - use a worker with a well defined
         // API to make this as clean and safe as possible
@@ -348,7 +387,16 @@
             eval(script);
         })();
 
-        app.loadBrownie(brownieModel);
+        // TODO - add to undoqueue!
+
+        // if this is a new brownie, load it
+        if(clear){
+            app.loadBrownie(brownieModel);
+
+        // otherwise, just re-render it
+        } else {
+            app.viewer.renderBrownie();
+        }
     }
 
 })();

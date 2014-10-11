@@ -71,6 +71,13 @@
 		// TODO - ensure el exists
 		this.el = config.el;
 
+        // add action bar to this mug
+        // TODO - use a proper VM for panel or something
+        var titleBar = document.createElement("div");
+        titleBar.innerHTML = "<span class='title'>Brownie Viewer</span>";
+        titleBar.classList.add("titleBar");
+        this.el.appendChild(titleBar);
+
         this.zoomFactor = config.zoomFactor || 1;
 		this.canvas = document.createElement("canvas");
 		
@@ -353,9 +360,11 @@
         },
 
 		resizeCanvas: function(){
-			this.canvas.width = Math.min(this.el.clientHeight, this.el.clientWidth);
-			this.canvas.height = Math.min(this.el.clientHeight, this.el.clientWidth);
-			this.renderer.setSize(Math.min(this.el.clientHeight, this.el.clientWidth), Math.min(this.el.clientHeight, this.el.clientWidth));
+            // HACK - magic number 28 is title bar height. make this not suck!
+            var baseSize = Math.min(this.el.clientHeight - 28, this.el.clientWidth);
+			this.canvas.width = baseSize;
+            this.canvas.height = baseSize;
+			this.renderer.setSize(this.canvas.height, this.canvas.width);
 		},
 
 		// sets model and makes any model related configs
@@ -397,7 +406,7 @@
 			this.camera.position.set(0, 0, this.model.depth * this.zoomFactor);
 
 			this.renderBrownie();
-			this.renderScene();
+			//this.renderScene();
 		}
 	};
 

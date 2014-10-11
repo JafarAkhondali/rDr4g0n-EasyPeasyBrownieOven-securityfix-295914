@@ -29,6 +29,8 @@
             config.model = this.model;
            
             this.viewer = new BrownieViewer(config); 
+            // TODO - ideally new BrownieViewer would load the model
+            this.viewer.loadBrownie(this.model);
         },
 
         createToolBox: function(config){
