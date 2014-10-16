@@ -22,6 +22,10 @@
 		// TODO - ensure el exists
 		this.el = config.el;
 
+        // used to pan the view around by offsetting/translating
+        // any drawing to the canvas
+        this.translation = [0,0];
+
         // add action bar to this mug
         // TODO - use a proper VM for panel or something
         var titleBar = document.createElement("div");
@@ -107,7 +111,9 @@
 			var currLayer = [],
 				onionLayer = [],
 				pxMultiplier = this.pxMultiplier,
-				val, onionVal;
+				val, onionVal,
+                offsetX = this.translation[0],
+                offsetY = this.translation[1];
 
 			// clear canvas
 			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -131,7 +137,7 @@
 					// if there is nothing on this pixel, and
 					// grid should be shown, draw the grid box
 					} else if(this.showGrid){
-						this.context.strokeRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
+						this.context.strokeRect(x * pxMultiplier + offsetX, y * pxMultiplier + offsetY, pxMultiplier, pxMultiplier);
 					}
 				}
 			}
@@ -139,27 +145,27 @@
 			// draw origin marker thing
 			this.context.fillStyle = GRID_COLOR;
 			this.context.beginPath();
-      		this.context.arc(this.canvas.width * 0.5, this.canvas.height * 0.5, 5, 0, 2 * Math.PI);
+      		this.context.arc(this.canvas.width * 0.5 + offsetX, this.canvas.height * 0.5 + offsetY, 5, 0, 2 * Math.PI);
       		this.context.fill();
 
 			// draw previous layer
 			onionLayer.forEach(function(px){
 				this.context.fillStyle = "rgba(" + hexColorToInt(px[2]).join(",") +","+ LAYER_OPACITY +")";
-				this.context.fillRect(px[0] * pxMultiplier, px[1] * pxMultiplier, pxMultiplier, pxMultiplier);
+				this.context.fillRect(px[0] * pxMultiplier + offsetX, px[1] * pxMultiplier + offsetY, pxMultiplier, pxMultiplier);
 				this.context.strokeStyle = px[2];
-				this.context.strokeRect(px[0] * pxMultiplier, px[1] * pxMultiplier, pxMultiplier, pxMultiplier);
+				this.context.strokeRect(px[0] * pxMultiplier + offsetX, px[1] * pxMultiplier + offsetY, pxMultiplier, pxMultiplier);
 			}.bind(this));
 
 			// draw current layer
 			currLayer.forEach(function(px){
 				this.context.fillStyle = px[2];
-				this.context.fillRect(px[0] * pxMultiplier, px[1] * pxMultiplier, pxMultiplier, pxMultiplier);
+				this.context.fillRect(px[0] * pxMultiplier + offsetX, px[1] * pxMultiplier + offsetY, pxMultiplier, pxMultiplier);
 			}.bind(this));
 
 			// draw cursor hint
 			if(this.cursorPos.length){
 				this.context.strokeStyle = CURSOR_HINT_COLOR;
-				this.context.strokeRect(this.cursorPos[0] * pxMultiplier, this.cursorPos[1] * pxMultiplier, pxMultiplier, pxMultiplier);
+				this.context.strokeRect(this.cursorPos[0] * pxMultiplier + offsetX, this.cursorPos[1] * pxMultiplier + offsetY, pxMultiplier, pxMultiplier);
 			}
 			
 			window.requestAnimationFrame(this.render);
@@ -176,7 +182,7 @@
 
 		onMouseDown: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this.emit("mousedown", px);
+			this.emit("mousedown", px, e);
 
 			// listen for drag event
 			this.canvas.addEventListener("mousemove", this.onDrag);
@@ -184,7 +190,7 @@
 
 		onMouseUp: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this.emit("mouseup", px);
+			this.emit("mouseup", px, e);
 
 			// clear listener for drag
 			this.canvas.removeEventListener("mousemove", this.onDrag);
@@ -192,7 +198,7 @@
 
 		onDrag: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this.emit("drag", px);
+			this.emit("drag", px, e);
 		},
 
 		onMouseWheel: function(e){
@@ -225,8 +231,8 @@
 
 		getTouchedPixel: function(mousePos){
 			return [
-				Math.ceil(mousePos[0] / this.pxMultiplier),
-				Math.ceil(mousePos[1] / this.pxMultiplier),
+				Math.ceil((mousePos[0] - this.translation[0]) / this.pxMultiplier),
+				Math.ceil((mousePos[1] - this.translation[1]) / this.pxMultiplier),
 			];
 		},
 		
@@ -295,7 +301,17 @@
 			this.initModel(model);
 			this._slice = 0;
 			this.resizeCanvas();
-		}
+		},
+
+        // move the canvas update the grid's translation coords
+        // to effectively pan the grid
+        updateTranslationOffset: function(coords){
+            this.translation = [this.translation[0] - coords[0], this.translation[1] - coords[1]]; 
+        },
+
+        setZoom: function(newZoom){
+            this.pxMultiplier = newZoom;    
+        }
 	};
 
 	// http://stackoverflow.com/a/17108084/957341

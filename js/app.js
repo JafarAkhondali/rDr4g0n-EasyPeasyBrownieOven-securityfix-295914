@@ -305,6 +305,8 @@
 
         app.toolbox.addTool("brush", new BrushTool());
         app.toolbox.addTool("eraser", new EraserTool());
+        app.toolbox.addTool("pan", new PanTool());
+        app.toolbox.addTool("zoom", new ZoomTool());
         app.toolbox.setCurrentTool("brush");
 
 	    $("#toolbox").insertBefore(app.toolbox.el, $("#toolbox").firstChild);
