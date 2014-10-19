@@ -129,18 +129,12 @@
             load: function(){
                 // TODO - validate!
                 var importData = this.modal.querySelector(".import").value,
-                    scriptData = this.modal.querySelector(".script").value,
                     selectedBrownie = this.modal.querySelector(".brownieList li.selected"),
                     brownieData;
 
                 // if import has data, then try to parse that guy
                 if(importData){
                     brownieData = importData;
-
-                // if a script was provided, run that mug
-                } else if(scriptData){
-                    // HACK - this is just put here to make things work. its a hack!
-                    parseBrownieScript(scriptData);
                 
                 // load the selected one from LS
                 } else if(selectedBrownie){
