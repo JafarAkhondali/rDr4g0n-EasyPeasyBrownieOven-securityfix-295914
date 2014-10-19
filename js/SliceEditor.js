@@ -145,7 +145,7 @@
 			// draw origin marker thing
 			this.context.fillStyle = GRID_COLOR;
 			this.context.beginPath();
-      		this.context.arc(this.model.width * 0.5 * pxMultiplier + offsetX, this.model.height * 0.5 * pxMultiplier + offsetY, 5, 0, 2 * Math.PI);
+      		this.context.arc(this.model.width * 0.5 * pxMultiplier + offsetX, this.model.height * 0.5 * pxMultiplier + offsetY, pxMultiplier * 0.3, 0, 2 * Math.PI);
       		this.context.fill();
 
 			// draw previous layer
