@@ -120,32 +120,54 @@
 
 			// draw grid and store other pixels to draw
 			this.context.strokeStyle = GRID_COLOR;
-			for(var x = 0; x < this.brownieWidth; x++){
-				for(var y = 0; y < this.brownieHeight; y++){
 
-					val = this.modelGet([x, y, this.getSlice()]);
-					onionVal = this.modelGet([x, y, this.getSlice() + this.onionSkin]);
+            // current position in canvas
+            var currPos = offsetX % pxMultiplier;
 
-					// if a value should be set here
-					if(val){
-						currLayer.push([x, y, val]);
-						
-					// if no value on this layer, but the onion skin layer has something
-					} else if(this.onionSkin && onionVal){
-						onionLayer.push([x, y,onionVal]);
+            this.context.beginPath();
 
-					// if there is nothing on this pixel, and
-					// grid should be shown, draw the grid box
-					} else if(this.showGrid){
-						this.context.strokeRect(x * pxMultiplier + offsetX, y * pxMultiplier + offsetY, pxMultiplier, pxMultiplier);
-					}
-				}
-			}
+            // draw vertical lines
+            while(currPos < this.canvas.width){
+                this.context.moveTo(currPos, 0);
+                this.context.lineTo(currPos, this.canvas.height);
+                currPos += pxMultiplier;
+            }
+
+            currPos = offsetY % pxMultiplier;
+
+            // draw horizontal lines
+            while(currPos < this.canvas.height){
+                this.context.moveTo(0, currPos);
+                this.context.lineTo(this.canvas.width, currPos);
+                currPos += pxMultiplier;
+            }
+
+            this.context.stroke();
+            this.context.closePath();
+
+
+            // gather brownie data to draw
+            for(var x = 0; x < this.brownieWidth; x++){
+                for(var y = 0; y < this.brownieHeight; y++){
+
+                    val = this.modelGet([x, y, this.getSlice()]);
+                    onionVal = this.modelGet([x, y, this.getSlice() + this.onionSkin]);
+
+                    // if a value should be set here
+                    if(val){
+                        currLayer.push([x, y, val]);
+                        
+                    // if no value on this layer, but the onion skin layer has something
+                    } else if(this.onionSkin && onionVal){
+                        onionLayer.push([x, y,onionVal]);
+                    }
+                }
+            }
 
 			// draw origin marker thing
 			this.context.fillStyle = GRID_COLOR;
 			this.context.beginPath();
-      		this.context.arc(this.model.width * 0.5 * pxMultiplier + offsetX, this.model.height * 0.5 * pxMultiplier + offsetY, pxMultiplier * 0.3, 0, 2 * Math.PI);
+      		this.context.arc(this.brownieWidth * 0.5 * pxMultiplier + offsetX, this.brownieHeight * 0.5 * pxMultiplier + offsetY, pxMultiplier * 0.3, 0, 2 * Math.PI);
       		this.context.fill();
 
 			// draw previous layer
