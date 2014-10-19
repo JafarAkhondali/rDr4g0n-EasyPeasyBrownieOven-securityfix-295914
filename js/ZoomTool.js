@@ -26,29 +26,35 @@
 
 		onEditorMouseDown: function(editor, coords, e){
             this.lastX = e.offsetX;
+            // track the touched pixel so that draggy zoom
+            // is centered around that pixel
+            this.lastCoords = coords;
 		},
 
 		onEditorDrag: function(editor, coords, e){
-            var offset = this.lastX - e.offsetX;
+            var offset = this.lastX - e.offsetX,
+                oldPxMulti = editor.pxMultiplier;
 
             this.draggyOffset += Math.abs(offset);
             
             // if the user's mouse has moved more than 20px,
             // then consider this a draggy zoom
             if(this.draggyOffset > DRAG_DEADZONE){
-                editor.incZoom(offset * 0.1);
-                // TODO - translate grid so zoom is centered around mouse pointer
+                editor.incZoom(offset * 0.2);
+                
+                // translate grid by the difference of the
+                // new zoom value
+                editor.updateTranslationOffset([
+                    -(oldPxMulti - editor.pxMultiplier) * this.lastCoords[0],
+                    -(oldPxMulti - editor.pxMultiplier) * this.lastCoords[1]
+                ]);
             }
 
             this.lastX = e.offsetX;
 		},
 
         onEditorMouseUp: function(editor, coords, e){
-            var oldPxMulti = editor.pxMultiplier,
-                // when zooming, an offset needs to be supplied
-                // to keep the zoomed pixel directly under the mouse
-                translateOffsetX,
-                translateOffsetY;
+            var oldPxMulti = editor.pxMultiplier;
 
             e.preventDefault();
 
@@ -66,16 +72,18 @@
                 }
 
                 editor.zoom(zoomIncrement);
-                
-                //TODO - translate the grid so that zoom is centered around mouse pointer
-                //translateOffsetX = ((editor.canvas.width * 0.5 - e.offsetX) * oldPxMulti) - ((editor.canvas.width * 0.5 - e.offsetX) * editor.pxMultiplier);
-                //translateOffsetY = ((editor.canvas.height * 0.5 - e.offsetY) * oldPxMulti) - ((editor.canvas.height * 0.5 - e.offsetY) * editor.pxMultiplier);
 
-                //// TODO - dont directly access editor.canvas.width and height
-                //editor.updateTranslationOffset(translateOffsetX, translateOffsetY);
+                // translate grid by the difference of the
+                // new zoom value
+                editor.updateTranslationOffset([
+                    -(oldPxMulti - editor.pxMultiplier) * coords[0],
+                    -(oldPxMulti - editor.pxMultiplier) * coords[1]
+                ]);
             }
 
             this.draggyOffset = 0;
+            this.lastX = null;
+            this.lastCoords = null;
         }
 	};
 
