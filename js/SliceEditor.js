@@ -309,8 +309,17 @@
             this.translation = [this.translation[0] - coords[0], this.translation[1] - coords[1]]; 
         },
 
-        setZoom: function(newZoom){
-            this.pxMultiplier = newZoom;    
+        zoom: function(zoomMulti){
+            this.pxMultiplier *= zoomMulti;
+        },
+        // TODO - make sure this can't get to or below zero?
+        incZoom: function(zoom){
+            this.pxMultiplier += zoom;
+
+            // don't allow multiplier to be zero or less
+            if(this.pxMultiplier <= 0){
+                this.pxMultiplier = 0.1;
+            }
         }
 	};
 

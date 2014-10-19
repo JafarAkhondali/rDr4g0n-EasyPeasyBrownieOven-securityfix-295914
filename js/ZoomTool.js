@@ -36,7 +36,7 @@
             // if the user's mouse has moved more than 20px,
             // then consider this a draggy zoom
             if(this.draggyOffset > DRAG_DEADZONE){
-                editor.setZoom(editor.pxMultiplier -= offset * 0.1);
+                editor.incZoom(offset * 0.1);
                 // TODO - translate grid so zoom is centered around mouse pointer
             }
 
@@ -54,16 +54,18 @@
 
             // if this isn't a drag, zoom!
             if(this.draggyOffset < DRAG_DEADZONE){
-                var zoomFactor = 4;
+                var zoomMulti = 0.1,
+                    zoomIncrement;
 
                 // if ctrl+click, zoom out
                 // TODO - use alt modifier ala photoshop?
                 if(e.ctrlKey){
-                    zoomFactor = -zoomFactor;
+                    zoomIncrement = 1 - zoomMulti;
+                } else {
+                    zoomIncrement = 1 + zoomMulti;
                 }
 
-                // TODO - dont directly access editor.pxMultiplier
-                editor.setZoom(editor.pxMultiplier += zoomFactor);
+                editor.zoom(zoomIncrement);
                 
                 //TODO - translate the grid so that zoom is centered around mouse pointer
                 //translateOffsetX = ((editor.canvas.width * 0.5 - e.offsetX) * oldPxMulti) - ((editor.canvas.width * 0.5 - e.offsetX) * editor.pxMultiplier);
