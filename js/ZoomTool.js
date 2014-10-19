@@ -40,7 +40,7 @@
             // if the user's mouse has moved more than 20px,
             // then consider this a draggy zoom
             if(this.draggyOffset > DRAG_DEADZONE){
-                editor.incZoom(offset * 0.2);
+                editor.incZoom(-offset * 0.2);
                 
                 // translate grid by the difference of the
                 // new zoom value
