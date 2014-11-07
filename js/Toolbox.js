@@ -82,8 +82,13 @@
 
 				// if a property sheet is present, use it
 				if(this.currentTool.tool.propertyVM){
+                    this.toolPropertiesEl.style.display = "block";
 					this.toolPropertiesEl.appendChild(this.currentTool.tool.propertyVM.el);
-				}
+
+                // otherwise, hide property panel
+				} else {
+                    this.toolPropertiesEl.style.display = "none";
+               }
 			}
 		},
 
