@@ -225,6 +225,9 @@
 
 			// listen for drag event
 			this.canvas.addEventListener("mousemove", this.onDrag);
+
+            // prevent text selection
+            document.body.classList.add("noSelect");
 		},
 
 		onMouseUp: function(e){
@@ -233,6 +236,9 @@
 
 			// clear listener for drag
 			this.canvas.removeEventListener("mousemove", this.onDrag);
+            
+            // restore text selection
+            document.body.classList.remove("noSelect");
 		},
 
 		onDrag: function(e){
