@@ -3,7 +3,8 @@
 
 	var LAYER_OPACITY = 0.25,
 		GRID_COLOR = "#555555",
-		CURSOR_HINT_COLOR = "#4CE806";
+		CURSOR_HINT_COLOR = "#4CE806",
+        GRID_HIDE_ZOOM_LEVEL = 7;
 
 	/**
 	 * Raster grid for painting a slice of brownie
@@ -118,33 +119,49 @@
 			// clear canvas
 			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-			// draw grid and store other pixels to draw
-			this.context.strokeStyle = GRID_COLOR;
+            // draw grid
+            // TODO - make this an option
+            if(pxMultiplier > GRID_HIDE_ZOOM_LEVEL){
+                this.context.strokeStyle = GRID_COLOR;
 
-            // current position in canvas
-            var currPos = offsetX % pxMultiplier;
+                // current position in canvas
+                var currPos = offsetX % pxMultiplier;
 
-            this.context.beginPath();
+                this.context.beginPath();
 
-            // draw vertical lines
-            while(currPos < this.canvas.width){
-                this.context.moveTo(currPos, 0);
-                this.context.lineTo(currPos, this.canvas.height);
-                currPos += pxMultiplier;
+                // draw vertical lines
+                while(currPos < this.canvas.width){
+                    this.context.moveTo(currPos, 0);
+                    this.context.lineTo(currPos, this.canvas.height);
+                    currPos += pxMultiplier;
+                }
+
+                currPos = offsetY % pxMultiplier;
+
+                // draw horizontal lines
+                while(currPos < this.canvas.height){
+                    this.context.moveTo(0, currPos);
+                    this.context.lineTo(this.canvas.width, currPos);
+                    currPos += pxMultiplier;
+                }
+
+                this.context.stroke();
+                this.context.closePath();
+
             }
 
-            currPos = offsetY % pxMultiplier;
-
-            // draw horizontal lines
-            while(currPos < this.canvas.height){
-                this.context.moveTo(0, currPos);
-                this.context.lineTo(this.canvas.width, currPos);
-                currPos += pxMultiplier;
-            }
-
-            this.context.stroke();
-            this.context.closePath();
-
+            // draw bounding rectangle
+            // TODO - make this an option
+            this.context.lineWidth = 2;
+            // TODO - make this constant?
+            this.context.strokeStyle = "#666666";
+            this.context.strokeRect(
+                offsetX,
+                offsetY,
+                this.brownieWidth * pxMultiplier,
+                this.brownieHeight * pxMultiplier
+            );
+            this.context.lineWidth = 1;
 
             // gather brownie data to draw
             for(var x = 0; x < this.brownieWidth; x++){
