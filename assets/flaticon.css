@@ -27,9 +27,15 @@
 .flaticon-redo11:before {
 	content: "\e004";
 }
-.flaticon-tools3:before {
+.flaticon-right3:before {
 	content: "\e005";
 }
-.flaticon-undo12:before {
+.flaticon-tools3:before {
 	content: "\e006";
+}
+.flaticon-undo12:before {
+	content: "\e007";
+}
+.flaticon-zoom46:before {
+	content: "\e008";
 }

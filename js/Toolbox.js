@@ -22,20 +22,20 @@
 		// listen to slice editors
 		if(config.editors){
 			config.editors.forEach(function(editor){
-				editor.on("mousedown", function(coords){
-					this.editorMouseDown(editor, coords);
+				editor.on("mousedown", function(coords, e){
+					this.editorMouseDown(editor, coords, e);
 				}.bind(this));
-				editor.on("mouseup", function(coords){
-					this.editorMouseUp(editor, coords);
+				editor.on("mouseup", function(coords, e){
+					this.editorMouseUp(editor, coords, e);
 				}.bind(this));
-				editor.on("drag", function(coords){
-					this.editorDrag(editor, coords);
+				editor.on("drag", function(coords, e){
+					this.editorDrag(editor, coords, e);
 				}.bind(this));
 				editor.on("mousewheel", function(wheelDelta){
 					this.editorMouseWheel(editor, wheelDelta);
 				}.bind(this));
-				editor.on("mousemove", function(coords){
-					this.editorMouseMove(editor, coords);
+				editor.on("mousemove", function(coords, e){
+					this.editorMouseMove(editor, coords, e);
 				}.bind(this));
 				editor.on("mouseout", function(){
 					this.editorMouseOut(editor);
@@ -82,23 +82,28 @@
 
 				// if a property sheet is present, use it
 				if(this.currentTool.tool.propertyVM){
+                    this.toolPropertiesEl.style.width = "200px";
 					this.toolPropertiesEl.appendChild(this.currentTool.tool.propertyVM.el);
-				}
+
+                // otherwise, hide property panel
+				} else {
+                    this.toolPropertiesEl.style.width = "0";
+               }
 			}
 		},
 
 		// proxy events to the currently selected tool
-		editorMouseDown: function(editor, coords){
+		editorMouseDown: function(editor, coords, e){
 			// TODO - ensure a tool is selected
-			this.currentTool.tool.onEditorMouseDown(editor, coords);
+			this.currentTool.tool.onEditorMouseDown(editor, coords, e);
 		},
-		editorMouseUp: function(editor, coords){
+		editorMouseUp: function(editor, coords, e){
 			// TODO - ensure a tool is selected
-			this.currentTool.tool.onEditorMouseUp(editor, coords);
+			this.currentTool.tool.onEditorMouseUp(editor, coords, e);
 		},
-		editorDrag: function(editor, coords){
+		editorDrag: function(editor, coords, e){
 			// TODO - ensure a tool is selected
-			this.currentTool.tool.onEditorDrag(editor, coords);
+			this.currentTool.tool.onEditorDrag(editor, coords, e);
 		},
 		editorMouseWheel: function(editor, wheelDelta){
 			var sliceData;
@@ -106,7 +111,7 @@
 			sliceData = editor.model.getSlice(editor.getSlice());
 			this.brownieViewer.showSlice(sliceData);
 		},
-		editorMouseMove: function(editor, coords){
+		editorMouseMove: function(editor, coords, e){
 			var cursorPos;
 
 			// update 3D cursor position

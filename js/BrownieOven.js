@@ -16,7 +16,7 @@
             // TODO - dont directly edit user's config?
             config.model = this.model;
             
-            this.editors.push(new SliceEditor(config));                
+            this.editors.push(new SliceEditor(config));
         },
 
         createModel: function(config){
@@ -29,6 +29,8 @@
             config.model = this.model;
            
             this.viewer = new BrownieViewer(config); 
+            // TODO - ideally new BrownieViewer would load the model
+            this.viewer.loadBrownie(this.model);
         },
 
         createToolBox: function(config){

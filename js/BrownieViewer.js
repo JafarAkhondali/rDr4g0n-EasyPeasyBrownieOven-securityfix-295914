@@ -71,6 +71,13 @@
 		// TODO - ensure el exists
 		this.el = config.el;
 
+        // add action bar to this mug
+        // TODO - use a proper VM for panel or something
+        var titleBar = document.createElement("div");
+        titleBar.innerHTML = "<span class='title'>Brownie Viewer</span>";
+        titleBar.classList.add("titleBar");
+        this.el.appendChild(titleBar);
+
         this.zoomFactor = config.zoomFactor || 1;
 		this.canvas = document.createElement("canvas");
 		
@@ -80,6 +87,8 @@
 
 		this.resizeCanvas();
 		this.el.appendChild(this.canvas);
+
+        this.brownieMaterial = config.brownieMaterial || "brownieFlat";
 
         this.controlsVM = new ViewModel({
             template: document.getElementById("brownieViewerControlsTemplate").innerHTML,
@@ -118,6 +127,10 @@
                 },
                 "click .resetRotation": function(){
                     this.model.meshes["brownie"].rotation.set(0,0,0);
+                },
+                "change .materialSelect": function(e){
+                    this.model.brownieMaterial = e.target.value;
+                    this.model.updateBrownieMaterial();
                 }
             },
             init: function(){
@@ -133,6 +146,19 @@
             },
             shouldRotateZ: function(){
                 return this.model.shouldRotateZBool ? "checked" : "";
+            },
+            generateMaterialOptions: function(){
+                var optsMap = {
+                    "browniePhong": "phong + AO",
+                    "brownieFlat": "flat"
+                };
+                var opts = [];
+
+                for(var i in optsMap){
+                    opts.push("<option value='"+ i +"' "+ (this.model.brownieMaterial === i ? "selected" : "") +">"+ optsMap[i] +"</option>");
+                }
+
+                return opts.join("");
             }
         });
         // default to showing current slice
@@ -144,7 +170,7 @@
 		this.camera.position.set(0, -this.model.height, this.model.depth * this.zoomFactor);
 
 		this.light = new THREE.PointLight(0xFFFFFF);
-		this.light.position = this.camera.position.clone();
+		this.light.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
 
 		this.scene = new THREE.Scene();
 		this.scene.add(this.light);
@@ -152,16 +178,18 @@
 		this.brownies = {};
 		this.meshes = {};
 		this.materials = {
-			brownie: new THREE.MeshPhongMaterial({
+			browniePhong: new THREE.MeshPhongMaterial({
 				color: 0xFFFFFF,
 				vertexColors: THREE.VertexColors,
-				specular: 0
+				specular: 0,
+                //map: new THREE.Texture(ambientOcclusionTexture.image)
 			}),
 			brownieFlat: new THREE.MeshBasicMaterial({
 				color: 0xFFFFFF,
 				vertexColors: THREE.VertexColors,
 				specular: 0,
-				shading: THREE.FlatShading
+				shading: THREE.FlatShading,
+                //map: new THREE.Texture(whiteTexture.image)
 			}),
 			cursor: new THREE.MeshBasicMaterial({
 				wireframe: true,
@@ -170,6 +198,7 @@
 			}),
 			brownieTransparent: new THREE.MeshPhongMaterial({
 				color: 0xFFFFFF,
+                //map: new THREE.Texture(whiteTexture.image),
 				vertexColors: THREE.VertexColors,
 				specular: 0,
 				transparent: true,
@@ -179,7 +208,7 @@
 
 		// cursor hint voxel
 		this.meshes["cursor"] = new THREE.Mesh(
-			new THREE.CubeGeometry(1, 1, 1),
+			new THREE.BoxGeometry(1, 1, 1),
 			this.materials["cursor"]
 		);
 
@@ -203,14 +232,14 @@
 			// remove previous brownie mesh before updating
 			this.scene.remove(this.meshes["brownie"]);
 
-			this.meshes["brownie"] = new THREE.Mesh(geo, this.materials["brownieFlat"]);
+			this.meshes["brownie"] = new THREE.Mesh(geo, this.materials[this.brownieMaterial]);
 
 			// add cursor hint
 			this.meshes["brownie"].add(this.meshes["cursor"]);
 
             // trackball controls
             // TODO - clear previous trackball object/events
-            new Trackball(this.el, this.meshes["brownie"]);
+            new Trackball(this.canvas, this.meshes["brownie"]);
 
 			this.scene.add(this.meshes["brownie"]);
 			this.renderScene();
@@ -254,7 +283,7 @@
 
 			this.meshes["slice"] = new THREE.Mesh(
 				sliceBrownie.getGeometry(),
-				this.materials["brownieFlat"]
+				this.materials[this.brownieMaterial]
 			);
 
 			// add new slice mesh
@@ -276,7 +305,7 @@
 		// restore brownie to original material
 		// and remove slice
 		unshowSlice: function(){
-			this.meshes["brownie"].material = this.materials["brownieFlat"];
+			this.meshes["brownie"].material = this.materials[this.brownieMaterial];
 			// remove previous slice
 			this.meshes["brownie"].remove(this.meshes["slice"]);
 			// remove slice brownie
@@ -326,10 +355,16 @@
 			}
 		},
 
+        updateBrownieMaterial: function(){
+           this.meshes["brownie"].material = this.materials[this.brownieMaterial]; 
+        },
+
 		resizeCanvas: function(){
-			this.canvas.width = Math.min(this.el.clientHeight, this.el.clientWidth);
-			this.canvas.height = Math.min(this.el.clientHeight, this.el.clientWidth);
-			this.renderer.setSize(Math.min(this.el.clientHeight, this.el.clientWidth), Math.min(this.el.clientHeight, this.el.clientWidth));
+            // HACK - magic number 28 is title bar height. make this not suck!
+            var baseSize = Math.min(this.el.clientHeight - 28, this.el.clientWidth);
+			this.canvas.width = baseSize;
+            this.canvas.height = baseSize;
+			this.renderer.setSize(this.canvas.height, this.canvas.width);
 		},
 
 		// sets model and makes any model related configs
@@ -371,7 +406,7 @@
 			this.camera.position.set(0, 0, this.model.depth * this.zoomFactor);
 
 			this.renderBrownie();
-			this.renderScene();
+			//this.renderScene();
 		}
 	};
 

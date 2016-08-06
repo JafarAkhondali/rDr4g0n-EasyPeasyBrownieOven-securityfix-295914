@@ -3,7 +3,8 @@
 
 	var LAYER_OPACITY = 0.25,
 		GRID_COLOR = "#555555",
-		CURSOR_HINT_COLOR = "#4CE806";
+		CURSOR_HINT_COLOR = "#4CE806",
+        GRID_HIDE_ZOOM_LEVEL = 7;
 
 	/**
 	 * Raster grid for painting a slice of brownie
@@ -21,6 +22,17 @@
 
 		// TODO - ensure el exists
 		this.el = config.el;
+
+        // used to pan the view around by offsetting/translating
+        // any drawing to the canvas
+        this.translation = [0,0];
+
+        // add action bar to this mug
+        // TODO - use a proper VM for panel or something
+        var titleBar = document.createElement("div");
+        titleBar.innerHTML = "<span class='title'>Slice Editor</span>";
+        titleBar.classList.add("titleBar");
+        this.el.appendChild(titleBar);
 
 		this.canvas = document.createElement("canvas");
 		this.resizeCanvas();
@@ -100,59 +112,99 @@
 			var currLayer = [],
 				onionLayer = [],
 				pxMultiplier = this.pxMultiplier,
-				val, onionVal;
+				val, onionVal,
+                offsetX = this.translation[0],
+                offsetY = this.translation[1];
 
 			// clear canvas
 			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-			// draw grid and store other pixels to draw
-			this.context.strokeStyle = GRID_COLOR;
-			for(var x = 0; x < this.brownieWidth; x++){
-				for(var y = 0; y < this.brownieHeight; y++){
+            // draw grid
+            // TODO - make this an option
+            if(pxMultiplier > GRID_HIDE_ZOOM_LEVEL){
+                this.context.strokeStyle = GRID_COLOR;
 
-					val = this.modelGet([x, y, this.getSlice()]);
-					onionVal = this.modelGet([x, y, this.getSlice() + this.onionSkin]);
+                // current position in canvas
+                var currPos = offsetX % pxMultiplier;
 
-					// if a value should be set here
-					if(val){
-						currLayer.push([x, y, val]);
-						
-					// if no value on this layer, but the onion skin layer has something
-					} else if(this.onionSkin && onionVal){
-						onionLayer.push([x, y,onionVal]);
+                this.context.beginPath();
 
-					// if there is nothing on this pixel, and
-					// grid should be shown, draw the grid box
-					} else if(this.showGrid){
-						this.context.strokeRect(x * pxMultiplier, y * pxMultiplier, pxMultiplier, pxMultiplier);
-					}
-				}
-			}
+                // draw vertical lines
+                while(currPos < this.canvas.width){
+                    this.context.moveTo(currPos, 0);
+                    this.context.lineTo(currPos, this.canvas.height);
+                    currPos += pxMultiplier;
+                }
+
+                currPos = offsetY % pxMultiplier;
+
+                // draw horizontal lines
+                while(currPos < this.canvas.height){
+                    this.context.moveTo(0, currPos);
+                    this.context.lineTo(this.canvas.width, currPos);
+                    currPos += pxMultiplier;
+                }
+
+                this.context.stroke();
+                this.context.closePath();
+
+            }
+
+            // draw bounding rectangle
+            // TODO - make this an option
+            this.context.lineWidth = 2;
+            // TODO - make this constant?
+            this.context.strokeStyle = "#666666";
+            this.context.strokeRect(
+                offsetX,
+                offsetY,
+                this.brownieWidth * pxMultiplier,
+                this.brownieHeight * pxMultiplier
+            );
+            this.context.lineWidth = 1;
+
+            // gather brownie data to draw
+            for(var x = 0; x < this.brownieWidth; x++){
+                for(var y = 0; y < this.brownieHeight; y++){
+
+                    val = this.modelGet([x, y, this.getSlice()]);
+                    onionVal = this.modelGet([x, y, this.getSlice() + this.onionSkin]);
+
+                    // if a value should be set here
+                    if(val){
+                        currLayer.push([x, y, val]);
+                        
+                    // if no value on this layer, but the onion skin layer has something
+                    } else if(this.onionSkin && onionVal){
+                        onionLayer.push([x, y,onionVal]);
+                    }
+                }
+            }
 
 			// draw origin marker thing
 			this.context.fillStyle = GRID_COLOR;
 			this.context.beginPath();
-      		this.context.arc(this.canvas.width * 0.5, this.canvas.height * 0.5, 5, 0, 2 * Math.PI);
+      		this.context.arc(this.brownieWidth * 0.5 * pxMultiplier + offsetX, this.brownieHeight * 0.5 * pxMultiplier + offsetY, pxMultiplier * 0.3, 0, 2 * Math.PI);
       		this.context.fill();
 
 			// draw previous layer
 			onionLayer.forEach(function(px){
 				this.context.fillStyle = "rgba(" + hexColorToInt(px[2]).join(",") +","+ LAYER_OPACITY +")";
-				this.context.fillRect(px[0] * pxMultiplier, px[1] * pxMultiplier, pxMultiplier, pxMultiplier);
+				this.context.fillRect(px[0] * pxMultiplier + offsetX, px[1] * pxMultiplier + offsetY, pxMultiplier, pxMultiplier);
 				this.context.strokeStyle = px[2];
-				this.context.strokeRect(px[0] * pxMultiplier, px[1] * pxMultiplier, pxMultiplier, pxMultiplier);
+				this.context.strokeRect(px[0] * pxMultiplier + offsetX, px[1] * pxMultiplier + offsetY, pxMultiplier, pxMultiplier);
 			}.bind(this));
 
 			// draw current layer
 			currLayer.forEach(function(px){
 				this.context.fillStyle = px[2];
-				this.context.fillRect(px[0] * pxMultiplier, px[1] * pxMultiplier, pxMultiplier, pxMultiplier);
+				this.context.fillRect(px[0] * pxMultiplier + offsetX, px[1] * pxMultiplier + offsetY, pxMultiplier, pxMultiplier);
 			}.bind(this));
 
 			// draw cursor hint
 			if(this.cursorPos.length){
 				this.context.strokeStyle = CURSOR_HINT_COLOR;
-				this.context.strokeRect(this.cursorPos[0] * pxMultiplier, this.cursorPos[1] * pxMultiplier, pxMultiplier, pxMultiplier);
+				this.context.strokeRect(this.cursorPos[0] * pxMultiplier + offsetX, this.cursorPos[1] * pxMultiplier + offsetY, pxMultiplier, pxMultiplier);
 			}
 			
 			window.requestAnimationFrame(this.render);
@@ -169,23 +221,29 @@
 
 		onMouseDown: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this.emit("mousedown", px);
+			this.emit("mousedown", px, e);
 
 			// listen for drag event
 			this.canvas.addEventListener("mousemove", this.onDrag);
+
+            // prevent text selection
+            document.body.classList.add("noSelect");
 		},
 
 		onMouseUp: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this.emit("mouseup", px);
+			this.emit("mouseup", px, e);
 
 			// clear listener for drag
 			this.canvas.removeEventListener("mousemove", this.onDrag);
+            
+            // restore text selection
+            document.body.classList.remove("noSelect");
 		},
 
 		onDrag: function(e){
 			var px = this.getTouchedPixel(getMousePos(e));
-			this.emit("drag", px);
+			this.emit("drag", px, e);
 		},
 
 		onMouseWheel: function(e){
@@ -218,8 +276,8 @@
 
 		getTouchedPixel: function(mousePos){
 			return [
-				Math.ceil(mousePos[0] / this.pxMultiplier),
-				Math.ceil(mousePos[1] / this.pxMultiplier),
+				Math.ceil((mousePos[0] - this.translation[0]) / this.pxMultiplier),
+				Math.ceil((mousePos[1] - this.translation[1]) / this.pxMultiplier),
 			];
 		},
 		
@@ -230,7 +288,7 @@
 		modelSet: function(coords, val){
 			var translatedCoords = this.translateOrigin(coords);
 
-            console.log("coords:", coords, "translatedCoords:", translatedCoords);
+            // console.log("coords:", coords, "translatedCoords:", translatedCoords);
 			// if val is null, delete the value
 			if(val === null){
 				delete this.model.model[this.model.createKey([translatedCoords[0], translatedCoords[1], translatedCoords[2]])];
@@ -288,7 +346,26 @@
 			this.initModel(model);
 			this._slice = 0;
 			this.resizeCanvas();
-		}
+		},
+
+        // move the canvas update the grid's translation coords
+        // to effectively pan the grid
+        updateTranslationOffset: function(coords){
+            this.translation = [this.translation[0] - coords[0], this.translation[1] - coords[1]]; 
+        },
+
+        zoom: function(zoomMulti){
+            this.pxMultiplier *= zoomMulti;
+        },
+        // TODO - make sure this can't get to or below zero?
+        incZoom: function(zoom){
+            this.pxMultiplier += zoom;
+
+            // don't allow multiplier to be zero or less
+            if(this.pxMultiplier <= 0){
+                this.pxMultiplier = 0.1;
+            }
+        }
 	};
 
 	// http://stackoverflow.com/a/17108084/957341
